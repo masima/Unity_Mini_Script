@@ -19,6 +19,7 @@ namespace MiniScript
 		T Substruct(T left, T right);
 		T Multiple(T left, T right);
 		T Divide(T left, T right);
+		T Mod(T left, T right);
 	}
 
 

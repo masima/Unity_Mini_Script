@@ -35,5 +35,9 @@ namespace MiniScript
 		{
 			return left / right;
 		}
+		public float Mod(float left, float right)
+		{
+			return left % right;
+		}
 	}
 }
