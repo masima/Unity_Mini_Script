@@ -15,6 +15,7 @@ namespace MiniScript
         , IComparable<T>
     {
         public abstract BinaryOperatorType BinaryOperatorType { get; }
+		public int Priority => BinaryOperatorType.GetPriority();
         public abstract string OperatorCode { get; }
         public MiniValue<T> Left;
         public MiniValue<T> Right;

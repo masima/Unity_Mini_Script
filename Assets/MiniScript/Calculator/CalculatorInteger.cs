@@ -18,6 +18,15 @@ namespace MiniScript
 		{
 			return (int)value;
 		}
+		public int Convert(string value)
+		{
+			return int.Parse(value);
+		}
+
+		public int Convert(ReadOnlySpan<char> value)
+		{
+			return int.Parse(value);
+		}
 
 		public int Add(int left, int right)
 		{
@@ -34,6 +43,10 @@ namespace MiniScript
 		public int Divide(int left, int right)
 		{
 			return left / right;
+		}
+		public int Mod(int left, int right)
+		{
+			return left % right;
 		}
 	}
 }

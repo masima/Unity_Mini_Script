@@ -35,6 +35,10 @@ namespace MiniScript
 		{
 			return _object as TOperator;
 		}
+		public int GetBinaryOperatorPriority()
+		{
+			return (_object as BinaryOperator<T>).Priority;
+		}
 
 
 
@@ -68,6 +72,17 @@ namespace MiniScript
 			}
 			return EValueType.Unknown;
 		}
+
+		public static MiniValue<T> GetConstValue(string value)
+		{
+			return new MiniValue<T>(Calculator.Convert(value));
+		}
+
+		public static MiniValue<T> GetConstValue(ReadOnlySpan<char> value)
+		{
+			return new MiniValue<T>(Calculator.Convert(value));
+		}
+
 
 
 
@@ -104,6 +119,13 @@ namespace MiniScript
 			_valueType = (byte)EValueType.BinaryOperator;
 			_value = default;
 			_object = binaryOperator;
+		}
+
+		public MiniValue(string value)
+		{
+			_valueType = (byte)EValueType.String;
+			_value = default;
+			_object = value;
 		}
 
 

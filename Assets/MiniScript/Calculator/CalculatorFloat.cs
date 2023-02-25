@@ -18,6 +18,17 @@ namespace MiniScript
 		{
 			return value;
 		}
+		public float Convert(string value)
+		{
+			return float.Parse(value);
+		}
+
+		public float Convert(ReadOnlySpan<char> value)
+		{
+			return float.Parse(value);
+		}
+
+
 
 		public float Add(float left, float right)
 		{

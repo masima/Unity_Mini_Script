@@ -14,6 +14,8 @@ namespace MiniScript
 
 		T Convert(bool value);
 		T Convert(float value);
+		T Convert(string value);
+		T Convert(ReadOnlySpan<char> value);
 
 		T Add(T left, T right);
 		T Substruct(T left, T right);
