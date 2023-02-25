@@ -7,7 +7,7 @@ using System.Linq;
 namespace MiniScript
 {
 	using System.Text.RegularExpressions;
-    public class MiniDecoder<T>
+	public class MiniDecoder<T>
 		where T : struct, IComparable, IFormattable, IConvertible, IEquatable<T>
 		, IComparable<T>
 	{
@@ -34,7 +34,7 @@ namespace MiniScript
 			}
 
 		}
-        private static void RegisterOperators(Assembly assembly)
+		private static void RegisterOperators(Assembly assembly)
 		{
 			Type[] binaryOperatorTypes = assembly.GetTypes()
 				.Where(_ =>
@@ -165,8 +165,8 @@ namespace MiniScript
 			foreach (OperatorInfo op in s_binaryOperators)
 			{
 				if (0 == string.CompareOrdinal(
-					    sentence, startat
-					    , op.OperatorCode, 0, op.OperatorCode.Length))
+						sentence, startat
+						, op.OperatorCode, 0, op.OperatorCode.Length))
 				{
 					value = op;
 					return true;
@@ -253,6 +253,6 @@ namespace MiniScript
 			}
 			return _rpnStack.Pop();
 		}	
-   }
+	}
 
 }

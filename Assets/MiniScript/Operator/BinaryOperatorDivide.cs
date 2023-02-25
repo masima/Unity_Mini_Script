@@ -3,21 +3,21 @@
 namespace MiniScript
 {
 	public class BinaryOperatorDivide<T> 
-        : BinaryOperator<T>
-        where T : struct, IComparable, IFormattable, IConvertible, IEquatable<T>
-        , IComparable<T>
-    {
-	    public override BinaryOperatorType BinaryOperatorType => BinaryOperatorType.Div;
-	    public override string OperatorCode => "/";
+		: BinaryOperator<T>
+		where T : struct, IComparable, IFormattable, IConvertible, IEquatable<T>
+ 		, IComparable<T>
+	{
+		public override BinaryOperatorType BinaryOperatorType => BinaryOperatorType.Div;
+		public override string OperatorCode => "/";
 
-        public override MiniValue<T> Evalute(Context<T> context)
-        {
-            MiniValue<T> left = Left.Evalute(context);
-            MiniValue<T> right = Right.Evalute(context);
+		public override MiniValue<T> Evalute(Context<T> context)
+		{
+			MiniValue<T> left = Left.Evalute(context);
+			MiniValue<T> right = Right.Evalute(context);
 
-	        return new MiniValue<T>(MiniValue<T>.Calculator.Divide(left.Value, right.Value));
-        }
-    }
+			return new MiniValue<T>(MiniValue<T>.Calculator.Divide(left.Value, right.Value));
+		}
+	}
 
 
 }

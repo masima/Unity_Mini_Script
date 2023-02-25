@@ -7,18 +7,18 @@ using UnityEngine;
 namespace MiniScript
 {
 	[Flags]
-    public enum EValueType
-    {
-        Unknown = 0,
-        Float,
-        Integer,
-        
-        String,
+	public enum EValueType
+	{
+		Unknown = 0,
+		Float,
+		Integer,
+		
+		String,
 
 		Operator = 0x80,
 		UnrayOpeartor = Operator,
-        BinaryOperator,
-    }
+		BinaryOperator,
+	}
 
 	public static class EValueTypeExtensions
 	{
