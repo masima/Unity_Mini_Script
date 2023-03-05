@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 
 namespace MiniScript
@@ -136,18 +136,26 @@ namespace MiniScript
 			case EValueType.Integer:
 			case EValueType.Float:
 				return this;
+			case EValueType.Variable:
+			{
+				var key = _object as string;
+				if (context.TryGetValue(key, out MiniValue<T> value))
+				{
+					return value;
+				}
+				throw new System.Exception($"Undefined variable : {key}");
+			}
 			case EValueType.BinaryOperator:
 				return (_object as BinaryOperator<T>).Evalute(context);
 			default:
-				throw new System.Exception("not support type");
+				throw new System.Exception($"not support type : {_valueType.ToString()}");
 			}
 		}
 
-
-		// public void Additive(MiniValue<T> value)
-		//{
-
-		//}
+		public void ConvertToVariable()
+		{
+			_valueType = (byte)EValueType.Variable;
+		}
 	}
 
 }

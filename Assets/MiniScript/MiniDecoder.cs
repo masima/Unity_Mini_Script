@@ -129,6 +129,12 @@ namespace MiniScript
 							as BinaryOperator<T>));
 						startat += operatorInfo.OperatorCode.Length;
 					}
+					else if (TryGetWord(sentence, startat, out string word))
+					{
+						// 変数
+						list.Add(new MiniValue<T>(word));
+						startat += word.Length;
+					}
 				}
 			}
 
@@ -149,6 +155,18 @@ namespace MiniScript
 		static bool TryGetConstValue(string sentence, int startat, out string value)
 		{
 				Match match = s_regexConstValue.Match(sentence, startat);
+				if (match.Success)
+				{
+					Group group = match.Groups[0];
+					value = sentence.Substring(startat, group.Length);
+					return true;
+				}
+				value = default;
+				return false;
+		}
+		static bool TryGetWord(string sentence, int startat, out string value)
+		{
+				Match match = s_regexWord.Match(sentence, startat);
 				if (match.Success)
 				{
 					Group group = match.Groups[0];
@@ -248,6 +266,10 @@ namespace MiniScript
 					var op = value.GetBinaryOperator<BinaryOperator<T>>();
 					op.Right = _rpnStack.Pop();
 					op.Left = _rpnStack.Pop();
+				}
+				else if (value.ValueType == EValueType.String)
+				{
+					value.ConvertToVariable();
 				}
 				_rpnStack.Push(value);
 			}

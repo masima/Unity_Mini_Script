@@ -15,6 +15,11 @@ namespace MiniScript
 		
 		String,
 
+		/// <summary>
+		/// 変数
+		/// </summary>
+		Variable,
+
 		Operator = 0x80,
 		UnrayOpeartor = Operator,
 		BinaryOperator,
