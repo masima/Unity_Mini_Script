@@ -66,9 +66,13 @@ namespace MiniScript
 		}
 
 
-		public MiniValue<T> Decode(string sentence)
+		public MiniValue<T> Decode(string sentence, int startat = 0)
 		{
-			List<MiniValue<T>> elements = SplitSentence(sentence);
+			return DecodeInner(sentence, ref startat, InvalidEndCode);
+		}
+		private MiniValue<T> DecodeInner(string sentence, ref int startat, char endCode)
+		{
+			List<MiniValue<T>> elements = SplitSentence(sentence, ref startat, endCode);
 			ConvertToRpn(elements);
 			return FinalizeRpn();
 		}
@@ -81,64 +85,110 @@ namespace MiniScript
 		readonly List<MiniValue<T>> _elements = new();
 		readonly List<MiniValue<T>> _rpn = new();
 
-		private List<MiniValue<T>> SplitSentence(string sentence)
+		const char InvalidEndCode = (char)0;
+
+		private List<MiniValue<T>> SplitSentence(
+			string sentence
+			, ref int startat
+			, char endCode = InvalidEndCode)
 		{
 			var list = _elements;
 			list.Clear();
 
-			int startat = 0;
 			bool isLastConst = false;
 			while (startat < sentence.Length)
 			{
-				if (IsSpace(sentence[startat]))
+				char c = sentence[startat];
+				if (IsSpace(c))
 				{
 					++startat;
 					continue;
 				}
 
-				if (isLastConst)
-				{
-					// 値の後
-					if (TryGetOperator(sentence, startat, out OperatorInfo operatorInfo))
-					{
-						list.Add(new MiniValue<T>(
-							Activator.CreateInstance(operatorInfo.Type)
-							as BinaryOperator<T>));
-						startat += operatorInfo.OperatorCode.Length;
-						isLastConst = false;
-					}
-					else
-					{
-						throw new Exception("inavlid format");
-					}
+				if (c == endCode){
+					++startat;
+					break;
 				}
-				else
+				switch (c)
 				{
-					// 値または単項演算子
-					if (TryGetConstValue(sentence, startat, out string value))
+					case '(':
 					{
-						list.Add(MiniValue<T>.GetConstValue(value));
-						startat += value.Length;
-						isLastConst = true;
+						++startat;
+						var childDecorder = new MiniDecoder<T>();
+						var childValue = childDecorder.DecodeInner(sentence, ref startat , ')');
+						list.Add(childValue);
+						break;
 					}
-					else if (TryGetOperator(sentence, startat, out OperatorInfo operatorInfo))
-					{
-						// ２項演算子
-						list.Add(new MiniValue<T>(
-							Activator.CreateInstance(operatorInfo.Type)
-							as BinaryOperator<T>));
-						startat += operatorInfo.OperatorCode.Length;
-					}
-					else if (TryGetWord(sentence, startat, out string word))
-					{
-						// 変数
-						list.Add(new MiniValue<T>(word));
-						startat += word.Length;
-					}
+					default:
+						if (isLastConst)
+						{
+							// 値の後
+							if (TryGetOperator(sentence, startat, out OperatorInfo operatorInfo))
+							{
+								list.Add(new MiniValue<T>(
+									Activator.CreateInstance(operatorInfo.Type)
+									as BinaryOperator<T>));
+								startat += operatorInfo.OperatorCode.Length;
+								isLastConst = false;
+							}
+							else
+							{
+								throw new Exception($"inavlid format:{GetErrorPositionMessage(sentence, startat)}");
+							}
+						}
+						else
+						{
+							// 値または単項演算子
+							if (TryGetConstValue(sentence, startat, out string value))
+							{
+								list.Add(MiniValue<T>.GetConstValue(value));
+								startat += value.Length;
+								isLastConst = true;
+							}
+							else if (TryGetOperator(sentence, startat, out OperatorInfo operatorInfo))
+							{
+								// ２項演算子
+								list.Add(new MiniValue<T>(
+									Activator.CreateInstance(operatorInfo.Type)
+									as BinaryOperator<T>));
+								startat += operatorInfo.OperatorCode.Length;
+							}
+							else if (TryGetWord(sentence, startat, out string word))
+							{
+								// 変数
+								list.Add(new MiniValue<T>(word));
+								startat += word.Length;
+							}
+							else
+							{
+							}
+						}
+						break;
 				}
 			}
 
 			return list;
+		}
+		static string GetErrorPositionMessage(string sentence, int startat)
+		{
+			int clipLength = 8;
+			int startClipPosition = startat - clipLength;
+			int startClipLength = clipLength;
+			if (startClipPosition < 0)
+			{
+				startClipLength += startClipPosition;
+				startClipPosition = 0;
+			}
+			int endClipLength = clipLength;
+			if (sentence.Length < startat + clipLength)
+			{
+				endClipLength = sentence.Length - startat;
+			}
+
+			return $"({startat.ToString()})"
+				+ $" {sentence.Substring(startClipPosition, startClipLength)}"
+				+ "^^^"
+				+ $" {sentence.Substring(startat, endClipLength)}";
 		}
 		static bool IsSpace(char c)
 		{
@@ -158,8 +208,11 @@ namespace MiniScript
 				if (match.Success)
 				{
 					Group group = match.Groups[0];
-					value = sentence.Substring(startat, group.Length);
-					return true;
+					if (startat == group.Index)
+					{
+						value = sentence.Substring(startat, group.Length);
+						return true;
+					}
 				}
 				value = default;
 				return false;
@@ -170,8 +223,11 @@ namespace MiniScript
 				if (match.Success)
 				{
 					Group group = match.Groups[0];
-					value = sentence.Substring(startat, group.Length);
-					return true;
+					if (startat == group.Index)
+					{
+						value = sentence.Substring(startat, group.Length);
+						return true;
+					}
 				}
 				value = default;
 				return false;
@@ -216,9 +272,10 @@ namespace MiniScript
 			while(enumerator.MoveNext())
 			{
 				var value = enumerator.Current;
-				if (value.ValueType.IsOperator())
+				if (value.ValueType.IsOperator()
+					&& !value.GetBinaryOperator().IsFinalized)
 				{
-					var binaryOperator = value.GetBinaryOperator<BinaryOperator<T>>();
+					IBinaryOperator binaryOperator = value.GetBinaryOperator();
 					// Get right value
 					if (!enumerator.MoveNext())
 					{
@@ -240,11 +297,13 @@ namespace MiniScript
 			for (int i = _rpn.Count - 1; 0 <= i; --i)
 			{
 				var value = _rpn[i];
-				if (!value.ValueType.IsOperator())
+				if (!value.ValueType.IsOperator()
+					|| value.GetBinaryOperator().IsFinalized)
 				{
 					return i + 1;
 				}
-				if (operatorPriority <= value.GetBinaryOperatorPriority())
+				IBinaryOperator binaryOperator = value.GetBinaryOperator();
+				if (operatorPriority <= binaryOperator.Priority)
 				{
 					return i + 1;
 				}
@@ -261,7 +320,8 @@ namespace MiniScript
 			_rpnStack.Clear();
 			foreach (var value in _rpn)
 			{
-				if (value.ValueType.IsOperator())
+				if (value.ValueType.IsOperator()
+					&& !value.GetBinaryOperator().IsFinalized)
 				{
 					var op = value.GetBinaryOperator<BinaryOperator<T>>();
 					op.Right = _rpnStack.Pop();

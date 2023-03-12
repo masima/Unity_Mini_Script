@@ -35,6 +35,10 @@ namespace MiniScript
 		{
 			return _object as TOperator;
 		}
+		public IBinaryOperator GetBinaryOperator()
+		{
+			return _object as IBinaryOperator;
+		}
 		public int GetBinaryOperatorPriority()
 		{
 			return (_object as BinaryOperator<T>).Priority;

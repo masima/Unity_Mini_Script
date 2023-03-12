@@ -6,6 +6,8 @@ namespace MiniScript
 	{
 		//BinaryOperatorType BinaryOperatorType { get; }
 		//string OperatorCode { get; }
+		int Priority { get; }
+		bool IsFinalized { get; }
 	}
 
 	public abstract class BinaryOperator<T>
@@ -19,6 +21,14 @@ namespace MiniScript
 		public abstract string OperatorCode { get; }
 		public MiniValue<T> Left;
 		public MiniValue<T> Right;
+
+		public bool IsFinalized
+		{
+			get
+			{
+				return Left.ValueType.IsValid() && Right.ValueType.IsValid();
+			}
+		}
 
 
 		public abstract MiniValue<T> Evalute(Context<T> context);
