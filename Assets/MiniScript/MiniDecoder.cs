@@ -84,6 +84,7 @@ namespace MiniScript
 
 		readonly List<MiniValue<T>> _elements = new();
 		readonly List<MiniValue<T>> _rpn = new();
+		MiniDecoder<T> _childDecoder = null;
 
 		const char InvalidEndCode = (char)0;
 
@@ -107,15 +108,18 @@ namespace MiniScript
 
 				if (c == endCode){
 					++startat;
-					break;
+					return list;
 				}
 				switch (c)
 				{
 					case '(':
 					{
 						++startat;
-						var childDecorder = new MiniDecoder<T>();
-						var childValue = childDecorder.DecodeInner(sentence, ref startat , ')');
+						if (_childDecoder is null)
+						{
+							_childDecoder = new MiniDecoder<T>();
+						}
+						var childValue = _childDecoder.DecodeInner(sentence, ref startat , ')');
 						list.Add(childValue);
 						break;
 					}
@@ -167,6 +171,11 @@ namespace MiniScript
 				}
 			}
 
+			if (endCode != InvalidEndCode)
+			{
+				throw new Exception($"not found '{endCode.ToString()}' {GetErrorPositionMessage(sentence, startat)}");
+			}
+
 			return list;
 		}
 		static string GetErrorPositionMessage(string sentence, int startat)
@@ -186,7 +195,7 @@ namespace MiniScript
 			}
 
 			return $"({startat.ToString()})"
-				+ $" {sentence.Substring(startClipPosition, startClipLength)}"
+				+ $" : {sentence.Substring(startClipPosition, startClipLength)}"
 				+ "^^^"
 				+ $" {sentence.Substring(startat, endClipLength)}";
 		}
