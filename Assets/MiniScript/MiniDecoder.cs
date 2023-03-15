@@ -312,7 +312,7 @@ namespace MiniScript
 					return i + 1;
 				}
 				IBinaryOperator binaryOperator = value.GetBinaryOperator();
-				if (operatorPriority <= binaryOperator.Priority)
+				if (binaryOperator.Priority <= operatorPriority)
 				{
 					return i + 1;
 				}

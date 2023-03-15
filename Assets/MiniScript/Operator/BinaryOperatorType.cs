@@ -2,12 +2,12 @@
 {
 	public enum BinaryOperatorType
 	{
-		Plus,
-		Minus,
-
-		Mul =  PriorityUnit * 1,
+		Mul =  PriorityUnit * 0,
 		Div,
 		Mod,
+
+		Plus =  PriorityUnit * 1,
+		Minus,
 
 		GreaterEqual = PriorityUnit * 2,
 		Lower,
