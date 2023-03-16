@@ -22,6 +22,11 @@ namespace MiniScript
 		T Multiple(T left, T right);
 		T Divide(T left, T right);
 		T Mod(T left, T right);
+
+		bool GreaterThan(T left, T right);
+		bool GreaterThanOrEqualTo(T left, T right);
+		bool LessThan(T left, T right);
+		bool LessThanOrEqualTo(T left, T right);
 	}
 
 

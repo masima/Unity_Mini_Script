@@ -9,12 +9,14 @@
 		Plus =  PriorityUnit * 1,
 		Minus,
 
-		GreaterEqual = PriorityUnit * 2,
-		Lower,
+		GreaterThan =  PriorityUnit * 2,
+		GreaterThanOrEqualTo,
+		LessThan,
+		LessThanOrEqualTo,
 
 		Equal =  PriorityUnit * 3,
 		NotEqual,
-		
+
 		
 		PriorityUnit = 0x100,
 		PriorityShift = 8,

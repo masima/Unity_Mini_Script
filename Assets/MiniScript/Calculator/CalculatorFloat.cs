@@ -50,5 +50,22 @@ namespace MiniScript
 		{
 			return left % right;
 		}
+
+		public bool GreaterThan(float left, float right)
+		{
+			return left > right;
+		}
+		public bool GreaterThanOrEqualTo(float left, float right)
+		{
+			return left >= right;
+		}
+		public bool LessThan(float left, float right)
+		{
+			return left < right;
+		}
+		public bool LessThanOrEqualTo(float left, float right)
+		{
+			return left <= right;
+		}
 	}
 }
