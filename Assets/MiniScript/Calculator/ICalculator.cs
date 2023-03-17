@@ -11,6 +11,7 @@ namespace MiniScript
 		where T : struct, IFormattable, IEquatable<T>
 	{
 		float ToSingle(T value);
+		bool ToBool(T value);
 
 		T Convert(bool value);
 		T Convert(float value);

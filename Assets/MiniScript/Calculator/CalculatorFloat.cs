@@ -9,6 +9,10 @@ namespace MiniScript
 		{
 			return value;
 		}
+		public bool ToBool(float value)
+		{
+			return 0.0f < value;
+		}
 
 		public float Convert(bool value)
 		{

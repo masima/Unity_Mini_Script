@@ -26,6 +26,12 @@ namespace MiniScript
 			get => _value.ToInt32(null);
 		}
 
+		public bool ToBool()
+		{
+			return Calculator.ToBool(_value);
+		}
+
+
 		/// <summary>
 		/// binary operator等。
 		/// </summary>

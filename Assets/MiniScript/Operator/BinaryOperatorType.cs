@@ -16,6 +16,9 @@
 
 		Equal =  PriorityUnit * 3,
 		NotEqual,
+		
+		LogicalConjunction = PriorityUnit * 4,
+		LogicalDisjunction = PriorityUnit * 5,
 
 		
 		PriorityUnit = 0x100,
