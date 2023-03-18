@@ -138,6 +138,7 @@ namespace MiniScript
 			_object = value;
 		}
 
+		private string AssignmentKey => _object as string;
 
 		public MiniValue<T> Evalute(Context<T> context)
 		{
@@ -148,7 +149,7 @@ namespace MiniScript
 				return this;
 			case EValueType.Variable:
 			{
-				var key = _object as string;
+				var key = AssignmentKey;
 				if (context.TryGetValue(key, out MiniValue<T> value))
 				{
 					return value;
@@ -160,6 +161,11 @@ namespace MiniScript
 			default:
 				throw new System.Exception($"not support type : {_valueType.ToString()}");
 			}
+		}
+
+		public void AssignmentTo(Context<T> context, MiniValue<T> value)
+		{
+			context[AssignmentKey] = value;
 		}
 
 		public void ConvertToVariable()

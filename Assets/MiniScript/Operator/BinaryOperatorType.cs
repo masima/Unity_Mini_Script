@@ -20,7 +20,10 @@
 		LogicalConjunction = PriorityUnit * 4,
 		LogicalDisjunction = PriorityUnit * 5,
 
-		
+
+		Assignment = PriorityUnit * 10,
+
+
 		PriorityUnit = 0x100,
 		PriorityShift = 8,
 	}
