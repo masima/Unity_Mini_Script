@@ -23,6 +23,8 @@
 
 		Assignment = PriorityUnit * 10,
 
+		Separator = PriorityUnit * 11,
+
 
 		PriorityUnit = 0x100,
 		PriorityShift = 8,
