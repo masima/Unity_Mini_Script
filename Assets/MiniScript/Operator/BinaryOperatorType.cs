@@ -23,7 +23,8 @@
 
 		Assignment = PriorityUnit * 10,
 
-		Separator = PriorityUnit * 11,
+		ArraySeparator = PriorityUnit * 11,
+		SentenceSeparator = PriorityUnit * 12,
 
 
 		PriorityUnit = 0x100,

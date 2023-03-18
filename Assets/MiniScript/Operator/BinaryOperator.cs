@@ -31,7 +31,7 @@ namespace MiniScript
 		}
 
 
-		public abstract MiniValue<T> Evalute(Context<T> context);
+		public abstract MiniValue<T> Evalute(IContext<T> context);
 	}
 
 }

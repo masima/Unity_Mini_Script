@@ -140,7 +140,7 @@ namespace MiniScript
 
 		private string AssignmentKey => _object as string;
 
-		public MiniValue<T> Evalute(Context<T> context)
+		public MiniValue<T> Evalute(IContext<T> context)
 		{
 			switch ((EValueType)_valueType)
 			{
@@ -163,7 +163,7 @@ namespace MiniScript
 			}
 		}
 
-		public void AssignmentTo(Context<T> context, MiniValue<T> value)
+		public void AssignmentTo(IContext<T> context, MiniValue<T> value)
 		{
 			context[AssignmentKey] = value;
 		}

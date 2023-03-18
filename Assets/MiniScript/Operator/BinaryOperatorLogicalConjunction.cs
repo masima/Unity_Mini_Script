@@ -10,7 +10,7 @@ namespace MiniScript
 		public override BinaryOperatorType BinaryOperatorType => BinaryOperatorType.LogicalConjunction;
 		public override string OperatorCode => "&&";
 
-		public override MiniValue<T> Evalute(Context<T> context)
+		public override MiniValue<T> Evalute(IContext<T> context)
 		{
 			bool left = Left.Evalute(context).ToBool();
 			bool right = Right.Evalute(context).ToBool();

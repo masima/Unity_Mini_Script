@@ -10,7 +10,7 @@ namespace MiniScript
 		public override BinaryOperatorType BinaryOperatorType => BinaryOperatorType.Equal;
 		public override string OperatorCode => "==";
 
-		public override MiniValue<T> Evalute(Context<T> context)
+		public override MiniValue<T> Evalute(IContext<T> context)
 		{
 			MiniValue<T> left = Left.Evalute(context);
 			MiniValue<T> right = Right.Evalute(context);

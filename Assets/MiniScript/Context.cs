@@ -4,14 +4,24 @@ using System.Collections.Generic;
 
 namespace MiniScript
 {
-	public class Context<T> : Dictionary<string, MiniValue<T>>
+	public interface IContext<T>
 		where T : struct, IComparable, IFormattable, IConvertible, IEquatable<T>
 		, IComparable<T>
 	{
-		public void Set(string key, T value)
+		public MiniValue<T> this[string key]
 		{
-			this[key] = new MiniValue<T>(value);
+			get;
+			set;
 		}
+
+		public bool TryGetValue(string key, out MiniValue<T> value);
+	}
+	public class Context<T>
+		: Dictionary<string, MiniValue<T>>
+		, IContext<T>
+		where T : struct, IComparable, IFormattable, IConvertible, IEquatable<T>
+		, IComparable<T>
+	{
 
 	}
 }
