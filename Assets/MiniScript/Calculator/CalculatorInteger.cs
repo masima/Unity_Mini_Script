@@ -18,6 +18,10 @@ namespace MiniScript
 		{
 			return value ? 1 : 0;
 		}
+		public int Convert(int value)
+		{
+			return value;
+		}
 		public int Convert(float value)
 		{
 			return (int)value;

@@ -19,6 +19,9 @@ namespace MiniScript
 		/// 変数
 		/// </summary>
 		Variable,
+		Array,
+
+
 
 		Operator = 0x80,
 		UnrayOpeartor = Operator,

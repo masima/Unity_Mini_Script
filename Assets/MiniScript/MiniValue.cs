@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Collections.Generic;
 
 namespace MiniScript
 {
@@ -50,6 +50,10 @@ namespace MiniScript
 			return (_object as BinaryOperator<T>).Priority;
 		}
 
+		public List<MiniValue<T>> GetArray()
+		{
+			return _object as List<MiniValue<T>>;
+		}
 
 
 		static ICalculator s_calculator;
@@ -118,6 +122,12 @@ namespace MiniScript
 			_value = Calculator.Convert(value);
 			_object = null;
 		}
+		public MiniValue(int value)
+		{
+			_valueType = (byte)GetValueType(typeof(T));
+			_value = Calculator.Convert(value);
+			_object = null;
+		}
 		public MiniValue(float value)
 		{
 			_valueType = (byte)GetValueType(typeof(T));
@@ -129,6 +139,12 @@ namespace MiniScript
 			_valueType = (byte)EValueType.BinaryOperator;
 			_value = default;
 			_object = binaryOperator;
+		}
+		public MiniValue(List<MiniValue<T>> values)
+		{
+			_valueType = (byte)EValueType.Array;
+			_value = Calculator.Convert(values.Count);
+			_object = values;
 		}
 
 		public MiniValue(string value)

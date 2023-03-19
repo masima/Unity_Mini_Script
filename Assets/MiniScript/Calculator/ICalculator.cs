@@ -14,6 +14,7 @@ namespace MiniScript
 		bool ToBool(T value);
 
 		T Convert(bool value);
+		T Convert(int value);
 		T Convert(float value);
 		T Convert(string value);
 		T Convert(ReadOnlySpan<char> value);
