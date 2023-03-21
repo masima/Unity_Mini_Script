@@ -142,7 +142,7 @@ namespace MiniScript
 						}
 						else
 						{
-							// 値または単項演算子
+							// 値
 							if (TryGetConstValue(sentence, startat, out string value))
 							{
 								list.Add(MiniValue<T>.GetConstValue(value));
@@ -282,9 +282,9 @@ namespace MiniScript
 			{
 				var value = enumerator.Current;
 				if (value.ValueType.IsOperator()
-					&& !value.GetBinaryOperator().IsFinalized)
+					&& !value.GetOperator().IsFinalized)
 				{
-					IBinaryOperator binaryOperator = value.GetBinaryOperator();
+					IOperator binaryOperator = value.GetOperator();
 					// Get right value
 					if (!enumerator.MoveNext())
 					{
@@ -307,11 +307,11 @@ namespace MiniScript
 			{
 				var value = _rpn[i];
 				if (!value.ValueType.IsOperator()
-					|| value.GetBinaryOperator().IsFinalized)
+					|| value.GetOperator().IsFinalized)
 				{
 					return i + 1;
 				}
-				IBinaryOperator binaryOperator = value.GetBinaryOperator();
+				IOperator binaryOperator = value.GetOperator();
 				if (binaryOperator.Priority <= operatorPriority)
 				{
 					return i + 1;
@@ -330,13 +330,13 @@ namespace MiniScript
 			foreach (var value in _rpn)
 			{
 				if (value.ValueType.IsOperator()
-					&& !value.GetBinaryOperator().IsFinalized)
+					&& !value.GetOperator().IsFinalized)
 				{
 					var op = value.GetBinaryOperator<BinaryOperator<T>>();
 					op.Right = _rpnStack.Pop();
 					op.Left = _rpnStack.Pop();
 				}
-				else if (value.ValueType == EValueType.String)
+				else if (value.ValueType.IsString())
 				{
 					value.ConvertToVariable();
 				}

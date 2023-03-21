@@ -7,7 +7,7 @@ namespace MiniScript
 		where T : struct, IComparable, IFormattable, IConvertible, IEquatable<T>
 		, IComparable<T>
 	{
-		public override BinaryOperatorType BinaryOperatorType => BinaryOperatorType.LogicalDisjunction;
+		public override OperatorType OperatorType => OperatorType.LogicalDisjunction;
 		public override string OperatorCode => "||";
 
 		public override MiniValue<T> Evalute(IContext<T> context)

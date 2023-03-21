@@ -8,7 +8,7 @@ namespace MiniScript
 		where T : struct, IComparable, IFormattable, IConvertible, IEquatable<T>
 		, IComparable<T>
 	{
-		public override BinaryOperatorType BinaryOperatorType => BinaryOperatorType.ArraySeparator;
+		public override OperatorType OperatorType => OperatorType.ArraySeparator;
 		public override string OperatorCode => ",";
 
 		private List<MiniValue<T>> _values;

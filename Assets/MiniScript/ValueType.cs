@@ -24,7 +24,8 @@ namespace MiniScript
 
 
 		Operator = 0x80,
-		UnrayOpeartor = Operator,
+		PrimaryOpeartor = Operator,
+		UnrayOpeartor,
 		BinaryOperator,
 	}
 
@@ -37,6 +38,10 @@ namespace MiniScript
 		public static bool IsOperator(this EValueType valueType)
 		{
 			return (valueType & EValueType.Operator) != 0;
+		}
+		public static bool IsString(this EValueType valueType)
+		{
+			return valueType == EValueType.String;
 		}
 	}
 }

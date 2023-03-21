@@ -41,9 +41,9 @@ namespace MiniScript
 		{
 			return _object as TOperator;
 		}
-		public IBinaryOperator GetBinaryOperator()
+		public IOperator GetOperator()
 		{
-			return _object as IBinaryOperator;
+			return _object as IOperator;
 		}
 		public int GetBinaryOperatorPriority()
 		{
@@ -172,10 +172,14 @@ namespace MiniScript
 				}
 				throw new System.Exception($"Undefined variable : {key}");
 			}
-			case EValueType.BinaryOperator:
-				return (_object as BinaryOperator<T>).Evalute(context);
 			default:
-				throw new System.Exception($"not support type : {_valueType.ToString()}");
+				switch (_object)
+				{
+					case IOperator<T> op:
+						return op.Evalute(context);
+					default:
+						throw new System.Exception($"not support type : {_valueType.ToString()}");
+				}
 			}
 		}
 

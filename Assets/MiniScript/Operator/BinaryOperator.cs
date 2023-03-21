@@ -2,23 +2,16 @@ using System;
 
 namespace MiniScript
 {
-	public interface IBinaryOperator
-	{
-		//BinaryOperatorType BinaryOperatorType { get; }
-		//string OperatorCode { get; }
-		int Priority { get; }
-		bool IsFinalized { get; }
-	}
-
 	public abstract class BinaryOperator<T>
-		: IBinaryOperator
+		: IOperator<T>
 		//where T : struct, IMValue
 		where T : struct, IComparable, IFormattable, IConvertible, IEquatable<T>
 		, IComparable<T>
 	{
-		public abstract BinaryOperatorType BinaryOperatorType { get; }
-		public int Priority => BinaryOperatorType.GetPriority();
+		public abstract OperatorType OperatorType { get; }
+		public int Priority => OperatorType.GetPriority();
 		public abstract string OperatorCode { get; }
+
 		public MiniValue<T> Left;
 		public MiniValue<T> Right;
 

@@ -7,7 +7,7 @@ namespace MiniScript
 		where T : struct, IComparable, IFormattable, IConvertible, IEquatable<T>
 		, IComparable<T>
 	{
-		public override BinaryOperatorType BinaryOperatorType => BinaryOperatorType.NotEqual;
+		public override OperatorType OperatorType => OperatorType.NotEqual;
 		public override string OperatorCode => "!=";
 
 		public override MiniValue<T> Evalute(IContext<T> context)
