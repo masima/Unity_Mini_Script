@@ -21,7 +21,10 @@ namespace MiniScript
 			arraySeparater._results = new List<MiniValue<T>>();
 			arraySeparater._values = new List<MiniValue<T>>();
 			arraySeparater._values.Clear();
-			arraySeparater._values.Add(value);
+			if (value.ValueType.IsValid())
+			{
+				arraySeparater._values.Add(value);
+			}
 			arraySeparater.Left = MiniValue<T>.Default;
 			arraySeparater.Right = MiniValue<T>.Default;
 

@@ -188,6 +188,7 @@ namespace MiniScript
 		{
 			switch ((EValueType)_valueType)
 			{
+			case EValueType.Unknown:
 			case EValueType.Integer:
 			case EValueType.Float:
 				return this;

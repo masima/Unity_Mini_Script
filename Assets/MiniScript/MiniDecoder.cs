@@ -295,7 +295,7 @@ namespace MiniScript
 		}
  
  
- 		MiniValue<T> ConvertToRpn(List<MiniValue<T>> elements)
+ 		void ConvertToRpn(List<MiniValue<T>> elements)
 		{
 			_rpn.Clear();
 			var enumerator = elements.GetEnumerator();
@@ -320,7 +320,6 @@ namespace MiniScript
 					_rpn.Add(value);
 				}
 			}
-			return _rpn.Last();
 		}
 		int GetInsertPosition(int operatorPriority)
 		{
@@ -347,6 +346,11 @@ namespace MiniScript
 		/// </summary>
 		MiniValue<T> FinalizeRpn()
 		{
+			if (0 == _rpn.Count)
+			{
+				// 値なし
+				return new MiniValue<T>();
+			}
 			_rpnStack.Clear();
 			foreach (MiniValue<T> value in _rpn)
 			{
