@@ -21,7 +21,7 @@ namespace MiniScript
 			var func = left.GetObject<MiniValue<T>.Function>();
 			var parameters = right.GetObject<List<MiniValue<T>>>();
 
-			return func.Invoke(parameters);
+			return func.Invoke(context, parameters);
 		}
 	}
 

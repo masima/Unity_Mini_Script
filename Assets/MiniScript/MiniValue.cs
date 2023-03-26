@@ -81,7 +81,7 @@ namespace MiniScript
 			set => s_calculator = value;
 		}
 
-		public delegate MiniValue<T> Function(List<MiniValue<T>> values);
+		public delegate MiniValue<T> Function(IContext<T> context, List<MiniValue<T>> values);
 
 
 		static MiniValue()
