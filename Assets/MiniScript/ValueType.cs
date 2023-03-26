@@ -20,6 +20,7 @@ namespace MiniScript
 		/// </summary>
 		Variable,
 		Array,
+		Function,
 
 
 
@@ -42,6 +43,10 @@ namespace MiniScript
 		public static bool IsString(this EValueType valueType)
 		{
 			return valueType == EValueType.String;
+		}
+		public static bool IsArray(this EValueType valueType)
+		{
+			return valueType == EValueType.Array;
 		}
 	}
 }

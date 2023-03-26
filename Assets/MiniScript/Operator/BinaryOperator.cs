@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace MiniScript
 {
@@ -21,6 +22,13 @@ namespace MiniScript
 			{
 				return Left.ValueType.IsValid() && Right.ValueType.IsValid();
 			}
+		}
+
+		public virtual MiniValue<T> Finailze(Stack<MiniValue<T>> rpnStack)
+		{
+			Right = rpnStack.Pop();
+			Left = rpnStack.Pop();
+			return new MiniValue<T>(this);
 		}
 
 

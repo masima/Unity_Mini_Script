@@ -96,7 +96,7 @@ namespace MiniScript
 			var list = _elements;
 			list.Clear();
 
-			bool isLastConst = false;
+			bool isLastIsValue = false;
 			while (startat < sentence.Length)
 			{
 				char c = sentence[startat];
@@ -120,11 +120,31 @@ namespace MiniScript
 							_childDecoder = new MiniDecoder<T>();
 						}
 						var childValue = _childDecoder.DecodeInner(sentence, ref startat , ')');
-						list.Add(childValue);
+						if (isLastIsValue)
+						{
+							list.Add(new MiniValue<T>(
+								new BinaryOperatorFunction<T>()
+								));
+							if (childValue.ValueType.IsOperator()
+								&& childValue.GetBinaryOperator<BinaryOperatorArraySeparater<T>>() is not null)
+							{
+								list.Add(childValue);
+							}
+							else
+							{
+								var arraySeparaterValue = BinaryOperatorArraySeparater<T>.InstantiateSingleParameter(childValue);
+								list.Add(arraySeparaterValue);
+							}
+						}
+						else
+						{
+							list.Add(childValue);
+						}
+						isLastIsValue = true;
 						break;
 					}
 					default:
-						if (isLastConst)
+						if (isLastIsValue)
 						{
 							// 値の後
 							if (TryGetOperator(sentence, startat, out OperatorInfo operatorInfo))
@@ -133,7 +153,7 @@ namespace MiniScript
 									Activator.CreateInstance(operatorInfo.Type)
 									as BinaryOperator<T>));
 								startat += operatorInfo.OperatorCode.Length;
-								isLastConst = false;
+								isLastIsValue = false;
 							}
 							else
 							{
@@ -147,7 +167,7 @@ namespace MiniScript
 							{
 								list.Add(MiniValue<T>.GetConstValue(value));
 								startat += value.Length;
-								isLastConst = true;
+								isLastIsValue = true;
 							}
 							else if (TryGetOperator(sentence, startat, out OperatorInfo operatorInfo))
 							{
@@ -162,6 +182,7 @@ namespace MiniScript
 								// 変数
 								list.Add(new MiniValue<T>(word));
 								startat += word.Length;
+								isLastIsValue = true;
 							}
 							else
 							{
@@ -327,20 +348,24 @@ namespace MiniScript
 		MiniValue<T> FinalizeRpn()
 		{
 			_rpnStack.Clear();
-			foreach (var value in _rpn)
+			foreach (MiniValue<T> value in _rpn)
 			{
+				MiniValue<T> pushValue;
 				if (value.ValueType.IsOperator()
 					&& !value.GetOperator().IsFinalized)
 				{
 					var op = value.GetBinaryOperator<BinaryOperator<T>>();
-					op.Right = _rpnStack.Pop();
-					op.Left = _rpnStack.Pop();
+					pushValue = op.Finailze(_rpnStack);
 				}
-				else if (value.ValueType.IsString())
+				else
 				{
-					value.ConvertToVariable();
+					if (value.ValueType.IsString())
+					{
+						value.ConvertToVariable();
+					}
+					pushValue = value;
 				}
-				_rpnStack.Push(value);
+				_rpnStack.Push(pushValue);
 			}
 			return _rpnStack.Pop();
 		}	

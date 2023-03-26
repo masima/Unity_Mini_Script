@@ -31,11 +31,24 @@ namespace MiniScript
 			return Calculator.ToBool(_value);
 		}
 
+		public static MiniValue<T> Default => new MiniValue<T>((T)default);
+
 
 		/// <summary>
 		/// binary operator等。
 		/// </summary>
 		private object _object;
+		public bool TryGetOperator<TOperator>(out TOperator operatorInstance)
+			where TOperator : IOperator
+		{
+			if (_object is TOperator op)
+			{
+				operatorInstance = op;
+				return true;
+			}
+			operatorInstance = default;
+			return false;
+		}
 		public TOperator GetBinaryOperator<TOperator>()
 			where TOperator : BinaryOperator<T>
 		{
@@ -48,6 +61,11 @@ namespace MiniScript
 		public int GetBinaryOperatorPriority()
 		{
 			return (_object as BinaryOperator<T>).Priority;
+		}
+		public TObject GetObject<TObject>()
+			where TObject : class
+		{
+			return _object as TObject;
 		}
 
 		public List<MiniValue<T>> GetArray()
@@ -62,6 +80,10 @@ namespace MiniScript
 			get => s_calculator as ICalculator<T>;
 			set => s_calculator = value;
 		}
+
+		public delegate MiniValue<T> Function(List<MiniValue<T>> values);
+
+
 		static MiniValue()
 		{
 			if (typeof(T) == typeof(float))
@@ -134,7 +156,7 @@ namespace MiniScript
 			_value = Calculator.Convert(value);
 			_object = null;
 		}
-		public MiniValue(BinaryOperator<T> binaryOperator)
+		public MiniValue(IOperator binaryOperator)
 		{
 			_valueType = (byte)EValueType.BinaryOperator;
 			_value = default;
@@ -145,6 +167,12 @@ namespace MiniScript
 			_valueType = (byte)EValueType.Array;
 			_value = Calculator.Convert(values.Count);
 			_object = values;
+		}
+		public MiniValue(Function function)
+		{
+			_valueType = (byte)EValueType.Function;
+			_value = default;
+			_object = function;
 		}
 
 		public MiniValue(string value)
@@ -178,7 +206,7 @@ namespace MiniScript
 					case IOperator<T> op:
 						return op.Evalute(context);
 					default:
-						throw new System.Exception($"not support type : {_valueType.ToString()}");
+						throw new System.Exception($"not support type : {((EValueType)_valueType).ToString()}");
 				}
 			}
 		}

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace MiniScript
@@ -12,28 +12,67 @@ namespace MiniScript
 		public override string OperatorCode => ",";
 
 		private List<MiniValue<T>> _values;
+		private List<MiniValue<T>> _results;
 
-		public override MiniValue<T> Evalute(IContext<T> context)
+
+		public static MiniValue<T> InstantiateSingleParameter(MiniValue<T> value)
 		{
-			MiniValue<T> left = Left.Evalute(context);
-			MiniValue<T> right = Right.Evalute(context);
+			var arraySeparater = new BinaryOperatorArraySeparater<T>();
+			arraySeparater._results = new List<MiniValue<T>>();
+			arraySeparater._values = new List<MiniValue<T>>();
+			arraySeparater._values.Clear();
+			arraySeparater._values.Add(value);
+			arraySeparater.Left = MiniValue<T>.Default;
+			arraySeparater.Right = MiniValue<T>.Default;
 
-			if (left.ValueType != EValueType.Array)
+			return new MiniValue<T>(arraySeparater);
+		}
+
+		public override MiniValue<T> Finailze(Stack<MiniValue<T>> rpnStack)
+		{
+			base.Finailze(rpnStack);
+			if (!Left.TryGetOperator(out BinaryOperatorArraySeparater<T> separater))
 			{
-				if (_values is null)
-				{
-					_values = new();
-				}
-				_values.Clear();
-				_values.Add(left);
+				_results = new List<MiniValue<T>>();
+				_values = new List<MiniValue<T>>();
+				_values.Add(Left);
+				_values.Add(Right);
+				separater = this;
 			}
 			else
 			{
-				_values = left.GetArray();
+				separater._values.Add(Right);
 			}
-			_values.Add(right);
+			separater.FinalizeInner();
+			return new MiniValue<T>(separater);
+		}
+		private void FinalizeInner()
+		{
+			Left = MiniValue<T>.Default;
+			Right = MiniValue<T>.Default;
+			if (_results.Capacity < _values.Count)
+			{
+				if (0 == _results.Capacity)
+				{
+					_results.Capacity = 4;
+				}
+				else
+				{
+					_results.Capacity *= 2;
+				}
+			}
+		}
 
-			return new MiniValue<T>(_values);
+
+		public override MiniValue<T> Evalute(IContext<T> context)
+		{
+			// _results.Capacity = _values.Count;
+			_results.Clear();
+			foreach	(MiniValue<T> value in _values)
+			{
+				_results.Add(value.Evalute(context));
+			}
+			return new MiniValue<T>(_results);
 		}
 	}
 
