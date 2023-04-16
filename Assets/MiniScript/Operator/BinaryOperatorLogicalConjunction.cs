@@ -13,6 +13,10 @@ namespace MiniScript
 		public override MiniValue<T> Evalute(IContext<T> context)
 		{
 			bool left = Left.Evalute(context).ToBool();
+			if (!left)
+			{
+				return new MiniValue<T>(false);
+			}
 			bool right = Right.Evalute(context).ToBool();
 
 			return new MiniValue<T>(left && right);
