@@ -22,13 +22,13 @@ namespace MiniScript
 		/// </summary>
 		private static readonly List<OperatorInfo> s_unrayOperators = new();
 		private static readonly List<OperatorInfo> s_binaryOperators = new();
-		public static void Setup(Assembly assembly)
+		public static void Setup(Assembly assembly = null)
 		{
 			s_binaryOperators.Clear();
 
 			Assembly miniDecoderAssembly = typeof(MiniDecoder<T>).Assembly;
 			RegisterOperators(miniDecoderAssembly);
-			if (miniDecoderAssembly != assembly)
+			if (assembly is not null && miniDecoderAssembly != assembly)
 			{
 				RegisterOperators(assembly);
 			}

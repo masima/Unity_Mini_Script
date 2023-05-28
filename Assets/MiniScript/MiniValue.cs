@@ -80,6 +80,10 @@ namespace MiniScript
 			get => s_calculator as ICalculator<T>;
 			set => s_calculator = value;
 		}
+		public static T Convert(bool value)
+		{
+			return Calculator.Convert(value);
+		}
 
 		public delegate MiniValue<T> Function(IContext<T> context, List<MiniValue<T>> values);
 

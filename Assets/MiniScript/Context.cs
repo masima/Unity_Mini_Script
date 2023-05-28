@@ -22,6 +22,10 @@ namespace MiniScript
 		where T : struct, IComparable, IFormattable, IConvertible, IEquatable<T>
 		, IComparable<T>
 	{
-
+		public Context<T> Set(string key, T value)
+		{
+			this[key] = new MiniValue<T>(value);
+			return this;
+		}
 	}
 }
