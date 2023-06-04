@@ -19,7 +19,7 @@ namespace MiniScript
 			}
 			bool right = Right.Evalute(context).ToBool();
 
-			return new MiniValue<T>(left);
+			return new MiniValue<T>(right);
 		}
 	}
 
