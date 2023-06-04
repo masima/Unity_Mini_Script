@@ -264,6 +264,7 @@ namespace MiniScript.Tests
 				var patterns = new (string sentence, float result)[]
 				{
 					("sum(1,2,3)", new float[] {1,2,3}.Sum()),
+					("sum(a+b+c)", new float[] {a,b,c}.Sum()),
 					("sum(a,b,c)", new float[] {a,b,c}.Sum()),
 					("sum(a,a+b,b*c)", new float[] {a,a+b,b*c}.Sum()),
 				};
