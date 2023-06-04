@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -19,17 +20,20 @@ namespace MiniScript.Tests
 	{
 		Decoder _decoder;
 
+
+
 		/// <summary>
-		/// Test開始時の初期化
+		/// Test開始前１度だけ実行
 		/// </summary>
-		[SetUp]
-		public void Setup()
+		[OneTimeSetUp]
+		public void OneTimeSetUp()
 		{
 			// Operatorを登録
 			Decoder.Setup();
 			// 使い回し用Decoder
 			_decoder = new Decoder();
 		}
+
 
 		[Test]
 		public void TestSimple()
@@ -69,7 +73,7 @@ namespace MiniScript.Tests
 		}
 
 		[Test]
-		public void TestConst()
+		public void TestOperator()
 		{
 			var patterns = new(string sentence, float result)[]
 			{
@@ -83,13 +87,61 @@ namespace MiniScript.Tests
 				("1+2/3", 1+2f/3),
 				("1/2+3", 1f/2+3),
 
-				("1+2<3", MiniValue.Convert(1+2<3)),
-				("1+2>3", MiniValue.Convert(1+2>3)),
-				("1+2==3", MiniValue.Convert(1+2==3)),
+				("3%2", 3f%2f),
 			};
 			TestPatterns(patterns);
 		}
 
+		/// <summary>
+		/// 比較演算を使用する
+		/// </summary>
+		[Test]
+		public void TestOperator_Compare()
+		{
+			var patterns = new(string sentence, float result)[]
+			{
+				("1<2", MiniValue.Convert(1<2)),
+				("1<1", MiniValue.Convert(1<1)),
+				("2<1", MiniValue.Convert(2<1)),
+
+				("1>2", MiniValue.Convert(1>2)),
+				("1>1", MiniValue.Convert(1>1)),
+				("2>1", MiniValue.Convert(2>1)),
+
+				("1<=2", MiniValue.Convert(1<=2)),
+				("1<=1", MiniValue.Convert(1<=1)),
+				("2<=1", MiniValue.Convert(2<=1)),
+
+				("1>=2", MiniValue.Convert(1>=2)),
+				("1>=1", MiniValue.Convert(1>=1)),
+				("2>=1", MiniValue.Convert(2>=1)),
+
+				("1==2", MiniValue.Convert(1==2)),
+				("1==1", MiniValue.Convert(1==1)),
+				("2==1", MiniValue.Convert(2==1)),
+
+				("1!=2", MiniValue.Convert(1!=2)),
+				("1!=1", MiniValue.Convert(1!=1)),
+				("2!=1", MiniValue.Convert(2!=1)),
+
+				("1+2<3", MiniValue.Convert(1+2<3)),
+				("1+2>3", MiniValue.Convert(1+2>3)),
+				("1+2==3", MiniValue.Convert(1+2==3)),
+
+				("1<2+3", MiniValue.Convert(1<2+3)),
+				("1>2+3", MiniValue.Convert(1>2+3)),
+				("1==2+3", MiniValue.Convert(1==2+3)),
+				("5==2+3", MiniValue.Convert(5==2+3)),
+			};
+			TestPatterns(patterns);
+		}
+
+		/// <summary>
+		/// 変数で演算する
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <param name="c"></param>
 		[Test]
 		public void TestVariable(
 			[Values(1,2,3,5,7,11)] float a
@@ -100,9 +152,11 @@ namespace MiniScript.Tests
 			// 変数保存場所生成
 			var context = new Context();
 			// 変数値設定
-			context[nameof(a)] = new MiniValue(a);
-			context[nameof(b)] = new MiniValue(b);
-			context[nameof(c)] = new MiniValue(c);
+			context
+				.Set(nameof(a), a)
+				.Set(nameof(b), b)
+				.Set(nameof(c), c)
+				;
 			{
 				var patterns = new (string sentence, float result)[]
 				{
@@ -120,6 +174,77 @@ namespace MiniScript.Tests
 			}
 		}
 
+		/// <summary>
+		/// 論理式で判定する
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <param name="c"></param>
+		[Test]
+		public void TestVariable_Logical(
+			[Values(1,2,3,5,7,11)] float a
+			, [Values(1,2,3,5,7,11)] float b
+			, [Values(1,2,3,5,7,11)] float c
+			)
+		{
+			// 変数保存場所生成
+			var context = new Context();
+			// 変数値設定
+			context
+				.Set(nameof(a), a)
+				.Set(nameof(b), b)
+				.Set(nameof(c), c)
+				;
+			{
+				var patterns = new (string sentence, float result)[]
+				{
+					("a+b==c || a==b+c", Convert(a+b==c || a==b+c)),
+					("a*b==c || a==b*c", Convert(a*b==c || a==b*c)),
+
+					("a==b || b==c", Convert(a==b || b==c)),
+					("a==b || b==c && a==c", Convert(a==b || b==c && a==c)),
+					("a==b && b==c || a==c", Convert(a==b && b==c || a==c)),
+				};
+				TestPatterns(patterns, context);
+			}
+		}
+
+		/// <summary>
+		/// 変数に値を代入する
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <param name="c"></param>
+		[Test]
+		public void TestVariable_Assignment(
+			[Values(1,2,3,5,7,11)] float a
+			, [Values(1,2,3,5,7,11)] float b
+			, [Values(1,2,3,5,7,11)] float c
+			)
+		{
+			// 変数保存場所生成
+			var context = new Context();
+			// 変数値設定
+			context
+				.Set(nameof(a), a)
+				.Set(nameof(b), b)
+				.Set(nameof(c), c)
+				;
+			{
+				var patterns = new (string sentence, float result)[]
+				{
+					("(d=a+b*c)+d", (d=a+b*c)+d),
+				};
+				TestPatterns(patterns, context);
+			}
+
+		}
+
+
+		public float Convert(bool value)
+		{
+			return MiniValue.Convert(value);
+		}
 
 		public void TestPatterns(
 			(string sentence, float result)[] patterns
