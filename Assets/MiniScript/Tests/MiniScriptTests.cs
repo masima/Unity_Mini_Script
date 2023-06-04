@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using Unity.Profiling;
@@ -225,6 +226,7 @@ namespace MiniScript.Tests
 			// 変数保存場所生成
 			var context = new Context();
 			// 変数値設定
+			float d;
 			context
 				.Set(nameof(a), a)
 				.Set(nameof(b), b)
@@ -238,6 +240,38 @@ namespace MiniScript.Tests
 				TestPatterns(patterns, context);
 			}
 
+		}
+
+
+		[Test]
+		public void TestCustomFunction()
+		{
+			var context = new Context();
+
+			// 関数登録
+			context["sum"] = new MiniValue<float>(Sum);
+			{
+				var patterns = new (string sentence, float result)[]
+				{
+					("sum(1,2,3)", new float[] {1,2,3}.Sum()),
+				};
+				TestPatterns(patterns, context);
+			}
+		}
+		/// <summary>
+		/// 合計値を求める
+		/// </summary>
+		/// <param name="context"></param>
+		/// <param name="parameters"></param>
+		/// <returns></returns>
+		private static MiniValue Sum(IContext<float> context, List<MiniValue> parameters)
+		{
+			float sum = 0;
+			foreach	(var value in parameters)
+			{
+				sum += value.FloatValue;
+			}
+			return new MiniValue<float>(sum);
 		}
 
 
