@@ -101,38 +101,38 @@ namespace MiniScript.Tests
 		{
 			var patterns = new(string sentence, float result)[]
 			{
-				("1<2", MiniValue.Convert(1<2)),
-				("1<1", MiniValue.Convert(1<1)),
-				("2<1", MiniValue.Convert(2<1)),
+				("1<2", Convert(1<2)),
+				("1<1", Convert(1<1)),
+				("2<1", Convert(2<1)),
 
-				("1>2", MiniValue.Convert(1>2)),
-				("1>1", MiniValue.Convert(1>1)),
-				("2>1", MiniValue.Convert(2>1)),
+				("1>2", Convert(1>2)),
+				("1>1", Convert(1>1)),
+				("2>1", Convert(2>1)),
 
-				("1<=2", MiniValue.Convert(1<=2)),
-				("1<=1", MiniValue.Convert(1<=1)),
-				("2<=1", MiniValue.Convert(2<=1)),
+				("1<=2", Convert(1<=2)),
+				("1<=1", Convert(1<=1)),
+				("2<=1", Convert(2<=1)),
 
-				("1>=2", MiniValue.Convert(1>=2)),
-				("1>=1", MiniValue.Convert(1>=1)),
-				("2>=1", MiniValue.Convert(2>=1)),
+				("1>=2", Convert(1>=2)),
+				("1>=1", Convert(1>=1)),
+				("2>=1", Convert(2>=1)),
 
-				("1==2", MiniValue.Convert(1==2)),
-				("1==1", MiniValue.Convert(1==1)),
-				("2==1", MiniValue.Convert(2==1)),
+				("1==2", Convert(1==2)),
+				("1==1", Convert(1==1)),
+				("2==1", Convert(2==1)),
 
-				("1!=2", MiniValue.Convert(1!=2)),
-				("1!=1", MiniValue.Convert(1!=1)),
-				("2!=1", MiniValue.Convert(2!=1)),
+				("1!=2", Convert(1!=2)),
+				("1!=1", Convert(1!=1)),
+				("2!=1", Convert(2!=1)),
 
-				("1+2<3", MiniValue.Convert(1+2<3)),
-				("1+2>3", MiniValue.Convert(1+2>3)),
-				("1+2==3", MiniValue.Convert(1+2==3)),
+				("1+2<3", Convert(1+2<3)),
+				("1+2>3", Convert(1+2>3)),
+				("1+2==3", Convert(1+2==3)),
 
-				("1<2+3", MiniValue.Convert(1<2+3)),
-				("1>2+3", MiniValue.Convert(1>2+3)),
-				("1==2+3", MiniValue.Convert(1==2+3)),
-				("5==2+3", MiniValue.Convert(5==2+3)),
+				("1<2+3", Convert(1<2+3)),
+				("1>2+3", Convert(1>2+3)),
+				("1==2+3", Convert(1==2+3)),
+				("5==2+3", Convert(5==2+3)),
 			};
 			TestPatterns(patterns);
 		}
