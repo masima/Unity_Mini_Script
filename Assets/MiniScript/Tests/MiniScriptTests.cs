@@ -33,6 +33,8 @@ namespace MiniScript.Tests
 			Decoder.Setup();
 			// 使い回し用Decoder
 			_decoder = new Decoder();
+
+			InitializeDecodedCache();
 		}
 
 
@@ -308,12 +310,41 @@ namespace MiniScript.Tests
 		{
 			foreach (var pattern in patterns)
 			{
-				var miniValue = _decoder.Decode(pattern.sentence);
+				if (!TryGetDecodedMinValue(pattern.sentence, out MiniValue miniValue))
+				{
+					continue;
+				}
 				float result = miniValue.Evalute(context).FloatValue;
 				Assert.AreEqual(result, pattern.result
 					, $"{pattern.sentence} result:{pattern.result}");
 			}
 		}
+
+
+		#region DecodedCache
+
+		/// <summary>
+		/// Decode結果をキャッシュする
+		/// </summary>
+		/// <returns></returns>
+		private Dictionary<string, MiniValue> _sentenceCache = new();
+
+		private void InitializeDecodedCache()
+		{
+			_sentenceCache.Clear();
+		}
+		private bool TryGetDecodedMinValue(string sentence, out MiniValue miniValue)
+		{
+			if (_sentenceCache.TryGetValue(sentence, out miniValue))
+			{
+				return true;
+			}
+			miniValue = _decoder.Decode(sentence);
+			_sentenceCache[sentence] = miniValue;
+			return true;
+		}
+
+		#endregion
 	}
 
 }
