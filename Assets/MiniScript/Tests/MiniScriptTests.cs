@@ -286,6 +286,14 @@ namespace MiniScript.Tests
 			return new MiniValue<float>(sum);
 		}
 
+		[Test]
+		public void TestSentences()
+		{
+			var context = new Context();
+			MiniValue miniValue = _decoder.Decode("a=1;b=2;a+b");
+			Assert.AreEqual(miniValue.Evalute(context).Value, 1f + 2f);
+		}
+
 
 		public float Convert(bool value)
 		{
