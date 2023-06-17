@@ -3,6 +3,7 @@
 	public enum OperatorType
 	{
 		Function =  PriorityUnit * 0,
+		ArrayAccessor,
 
 		Mul =  PriorityUnit * 2,
 		Div,

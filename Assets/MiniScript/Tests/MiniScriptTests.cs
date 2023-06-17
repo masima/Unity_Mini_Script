@@ -17,7 +17,7 @@ namespace MiniScript.Tests
 	public class Decoder : MiniDecoder<float> {}
 	public class Context : Context<float> {}
 
-	public class MiniScriptTests
+	public partial class MiniScriptTests
 	{
 		Decoder _decoder;
 

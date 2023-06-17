@@ -147,7 +147,21 @@ namespace MiniScript
 						if (isLastIsValue)
 						{
 							// 値の後
-							if (TryGetOperator(sentence, startat, out OperatorInfo operatorInfo))
+							if (c == '[')
+							{
+								// 配列参照
+								++startat;
+								if (_childDecoder is null)
+								{
+									_childDecoder = new MiniDecoder<T>();
+								}
+								var childValue = _childDecoder.DecodeInner(sentence, ref startat , ']');
+								list.Add(new MiniValue<T>(
+									new BinaryOperatorArrayAccessor<T>()
+									));
+								list.Add(childValue);
+							}
+							else if (TryGetOperator(sentence, startat, out OperatorInfo operatorInfo))
 							{
 								list.Add(new MiniValue<T>(
 									Activator.CreateInstance(operatorInfo.Type)
@@ -186,6 +200,7 @@ namespace MiniScript
 							}
 							else
 							{
+								throw new Exception($"inavlid format:{GetErrorPositionMessage(sentence, startat)}");
 							}
 						}
 						break;

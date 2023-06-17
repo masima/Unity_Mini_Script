@@ -67,6 +67,10 @@ namespace MiniScript
 		{
 			return _object as TObject;
 		}
+		public object GetObject()
+		{
+			return _object;
+		}
 
 		public List<MiniValue<T>> GetArray()
 		{
