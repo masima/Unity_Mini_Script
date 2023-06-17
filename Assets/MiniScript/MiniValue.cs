@@ -25,6 +25,10 @@ namespace MiniScript
 		{
 			get => _value.ToInt32(null);
 		}
+		public string StringValue
+		{
+			get => _object?.ToString() ?? _value.ToString();
+		}
 
 		public bool ToBool()
 		{
@@ -70,6 +74,10 @@ namespace MiniScript
 		public object GetObject()
 		{
 			return _object;
+		}
+		public Dictionary<string, MiniValue<T>> GetDictionary()
+		{
+			return _object as Dictionary<string, MiniValue<T>>;
 		}
 
 		public List<MiniValue<T>> GetArray()
@@ -176,6 +184,12 @@ namespace MiniScript
 			_value = Calculator.Convert(values.Count);
 			_object = values;
 		}
+		public MiniValue(Dictionary<string, MiniValue<T>> values)
+		{
+			_valueType = (byte)EValueType.Dictionary;
+			_value = Calculator.Convert(values.Count);
+			_object = values;
+		}
 		public MiniValue(Function function)
 		{
 			_valueType = (byte)EValueType.Function;
@@ -222,7 +236,19 @@ namespace MiniScript
 
 		public void AssignmentTo(IContext<T> context, MiniValue<T> value)
 		{
-			context[AssignmentKey] = value;
+			switch (ValueType)
+			{
+				case EValueType.Variable:
+					context[AssignmentKey] = value;
+					break;
+				default:
+					if (TryGetOperator(out BinaryOperatorDictionaryAccessor<T> accessor))
+					{
+						accessor.AssignmentTo(context, value);
+						return;
+					}
+					throw new InvalidOperationException();
+			}
 		}
 
 		public void ConvertToVariable()

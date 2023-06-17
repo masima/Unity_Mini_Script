@@ -4,6 +4,7 @@
 	{
 		Function =  PriorityUnit * 0,
 		ArrayAccessor,
+		DictionaryAccessor,
 
 		Mul =  PriorityUnit * 2,
 		Div,

@@ -20,6 +20,7 @@ namespace MiniScript
 		/// </summary>
 		Variable,
 		Array,
+		Dictionary,
 		Function,
 
 
