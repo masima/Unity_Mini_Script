@@ -29,6 +29,17 @@ namespace MiniScript.Tests
 				var patterns = new (string sentence, float result)[]
 				{
 					("a.a=1;a.b=2;a.a+a.b", 3),
+					("a.a=1;a.b=2;a.a<a.b", Convert(1<2)),
+
+					("a.a=1;a.b=2;a.a<a.a+a.b", Convert(1<1+2)),
+					("a.a=1;a.b=2;a.a>a.a+a.b", Convert(1>1+2)),
+					("a.a=1;a.b=2;a.a+a.b<a.a", Convert(1+2<1)),
+					("a.a=1;a.b=2;a.a+a.b>a.a", Convert(1+2>1)),
+
+					("a.a=1;a.b=2;a.a<a.a*a.b", Convert(1<1*2)),
+					("a.a=1;a.b=2;a.a>a.a*a.b", Convert(1>1*2)),
+					("a.a=1;a.b=2;a.a*a.b<a.a", Convert(1*2<1)),
+					("a.a=1;a.b=2;a.a*a.b>a.a", Convert(1*2>1)),
 				};
 				TestPatterns(patterns, context);
 			}

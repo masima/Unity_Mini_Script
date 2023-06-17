@@ -14,6 +14,8 @@ namespace MiniScript
 			set;
 		}
 
+		public IContext<T> Instantiate();
+		public int Count { get; }
 		public bool TryGetValue(string key, out MiniValue<T> value);
 	}
 	public class Context<T>
@@ -22,6 +24,11 @@ namespace MiniScript
 		where T : struct, IComparable, IFormattable, IConvertible, IEquatable<T>
 		, IComparable<T>
 	{
+		public IContext<T> Instantiate()
+		{
+			return new Context<T>();
+		}
+
 		public Context<T> Set(string key, T value)
 		{
 			this[key] = new MiniValue<T>(value);

@@ -75,9 +75,9 @@ namespace MiniScript
 		{
 			return _object;
 		}
-		public Dictionary<string, MiniValue<T>> GetDictionary()
+		public IContext<T> GetDictionary()
 		{
-			return _object as Dictionary<string, MiniValue<T>>;
+			return _object as IContext<T>;
 		}
 
 		public List<MiniValue<T>> GetArray()
@@ -184,7 +184,7 @@ namespace MiniScript
 			_value = Calculator.Convert(values.Count);
 			_object = values;
 		}
-		public MiniValue(Dictionary<string, MiniValue<T>> values)
+		public MiniValue(IContext<T> values)
 		{
 			_valueType = (byte)EValueType.Dictionary;
 			_value = Calculator.Convert(values.Count);

@@ -35,7 +35,7 @@ namespace MiniScript
 
 		public override MiniValue<T> Evalute(IContext<T> context)
 		{
-			Dictionary<string, MiniValue<T>> dictionary = null;
+			IContext<T> dictionary = null;
 			string contextKey = _values[0];
 			if (context.TryGetValue(contextKey, out MiniValue<T> miniValue))
 			{
@@ -64,7 +64,7 @@ namespace MiniScript
 
 		public void AssignmentTo(IContext<T> context, MiniValue<T> value)
 		{
-			Dictionary<string, MiniValue<T>> dictionary = null;
+			IContext<T> dictionary = null;
 			string contextKey = _values[0];
 			if (context.TryGetValue(contextKey, out MiniValue<T> miniValue))
 			{
@@ -72,7 +72,7 @@ namespace MiniScript
 			}
 			if (dictionary is null)
 			{
-				dictionary = new Dictionary<string, MiniValue<T>>();
+				dictionary = context.Instantiate();
 				miniValue = new MiniValue<T>(dictionary);
 				context[contextKey] = miniValue;
 			}
@@ -88,7 +88,7 @@ namespace MiniScript
 				}
 				else
 				{
-					var childDictionary = new Dictionary<string, MiniValue<T>>();
+					var childDictionary = context.Instantiate();
 					dictionary[key] = new MiniValue<T>(childDictionary);
 					dictionary = childDictionary;
 				}
