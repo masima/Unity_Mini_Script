@@ -21,5 +21,10 @@ namespace MiniScript
 		MiniValue<T> Evalute(IContext<T> context);
 	}
 
+	public interface IOperatorOnFinalized
+	{
+		public bool IsOnFinishedRequired { get; }
+		public void OnFinalized();
+	}
 
 }

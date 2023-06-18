@@ -5,13 +5,16 @@ namespace MiniScript
 {
 	public class BinaryOperatorDictionaryAccessor<T>
 		: BinaryOperator<T>
+		, IOperatorOnFinalized
 		where T : struct, IComparable, IFormattable, IConvertible, IEquatable<T>
 		, IComparable<T>
 	{
+		public const string ConstOperationCode = ".";
 		public override OperatorType OperatorType => OperatorType.DictionaryAccessor;
-		public override string OperatorCode => ".";
+		public override string OperatorCode => ConstOperationCode;
 
 		private List<string> _values;
+		private string[] _splitedPath;
 
 
 		public override MiniValue<T> Finailze(Stack<MiniValue<T>> rpnStack)
@@ -33,39 +36,45 @@ namespace MiniScript
 			return new MiniValue<T>(accessor);
 		}
 
+		public bool IsOnFinishedRequired => _values is not null;
+		public void OnFinalized()
+		{
+			_splitedPath = _values.ToArray();
+			_values = null;
+		}
+
 		public override MiniValue<T> Evalute(IContext<T> context)
 		{
-			IContext<T> dictionary = null;
-			string contextKey = _values[0];
-			if (context.TryGetValue(contextKey, out MiniValue<T> miniValue))
+			return GetByPath(context, _splitedPath);
+		}
+		public static MiniValue<T> GetByPath(IContext<T> context, string[] hierarchy)
+		{
+			MiniValue<T> miniValue = new();
+			int lastIndex = hierarchy.Length - 1;
+			for	(int i = 0; i < lastIndex; i++)
 			{
-				dictionary = miniValue.GetDictionary();
-			}
-			if (dictionary is null)
-			{
-				throw new InvalidOperationException($"undefined {string.Join(OperatorCode, _values)}");
-			}
-
-			for (int i = 1; i < _values.Count; i++)
-			{
-				if (dictionary.TryGetValue(_values[i], out MiniValue<T> childValue))
+				if (context.TryGetValue(hierarchy[i], out MiniValue<T> childValue))
 				{
 					miniValue = childValue;
-					dictionary = miniValue.GetDictionary();
+					context = miniValue.GetDictionary();
 				}
 				else
 				{
-					throw new InvalidOperationException($"undefined {string.Join(OperatorCode, _values)}");
+					throw new InvalidOperationException($"undefined {string.Join(ConstOperationCode, hierarchy)}");
 				}
 			}
-
-			return miniValue;
+			if (context.TryGetValue(hierarchy[lastIndex], out miniValue))
+			{
+				return miniValue;
+			}
+			throw new InvalidOperationException($"undefined {string.Join(ConstOperationCode, hierarchy)}");
 		}
+
 
 		public void AssignmentTo(IContext<T> context, MiniValue<T> value)
 		{
 			IContext<T> dictionary = null;
-			string contextKey = _values[0];
+			string contextKey = _splitedPath[0];
 			if (context.TryGetValue(contextKey, out MiniValue<T> miniValue))
 			{
 				dictionary = miniValue.GetDictionary();
@@ -77,10 +86,10 @@ namespace MiniScript
 				context[contextKey] = miniValue;
 			}
 
-			int lastIndex = _values.Count - 1;
+			int lastIndex = _splitedPath.Length - 1;
 			for (int i = 1; i < lastIndex; i++)
 			{
-				string key = _values[i];
+				string key = _splitedPath[i];
 				if (dictionary.TryGetValue(key, out MiniValue<T> childValue))
 				{
 					miniValue = childValue;
@@ -93,7 +102,7 @@ namespace MiniScript
 					dictionary = childDictionary;
 				}
 			}
-			dictionary[_values[lastIndex]] = value;
+			dictionary[_splitedPath[lastIndex]] = value;
 		}
 	}
 

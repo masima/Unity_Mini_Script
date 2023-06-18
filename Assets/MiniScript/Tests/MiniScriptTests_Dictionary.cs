@@ -45,5 +45,14 @@ namespace MiniScript.Tests
 			}
 		}
 
+		[Test]
+		public void TestDictionary_GetByPath()
+		{
+			var context = new Context();
+			MiniValue miniValue = _decoder.Decode("a.b.c=123");
+			miniValue.Evalute(context);
+			Assert.AreEqual(context.GetByPath("a.b.c").Value, 123f);
+		}
+
 	}
 }

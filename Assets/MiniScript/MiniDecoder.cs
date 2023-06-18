@@ -356,6 +356,7 @@ namespace MiniScript
 		}
 
 		readonly Stack<MiniValue<T>> _rpnStack = new();
+		readonly List<IOperatorOnFinalized> _onFinalizedList = new();
 		/// <summary>
 		/// 逆ポーランド状態から最終結果作成
 		/// </summary>
@@ -367,6 +368,7 @@ namespace MiniScript
 				return new MiniValue<T>();
 			}
 			_rpnStack.Clear();
+			_onFinalizedList.Clear();
 			foreach (MiniValue<T> value in _rpn)
 			{
 				MiniValue<T> pushValue;
@@ -375,6 +377,13 @@ namespace MiniScript
 				{
 					var op = value.GetBinaryOperator<BinaryOperator<T>>();
 					pushValue = op.Finailze(_rpnStack);
+					if (op is IOperatorOnFinalized opOnFinalized)
+					{
+						if (opOnFinalized.IsOnFinishedRequired)
+						{
+							_onFinalizedList.Add(op as IOperatorOnFinalized);
+						}
+					}
 				}
 				else
 				{
@@ -386,6 +395,13 @@ namespace MiniScript
 				}
 				_rpnStack.Push(pushValue);
 			}
+
+			// 最終処理
+			foreach	(var op in _onFinalizedList)
+			{
+				op.OnFinalized();
+			}
+			_onFinalizedList.Clear();
 			return _rpnStack.Pop();
 		}	
 	}

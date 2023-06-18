@@ -34,5 +34,12 @@ namespace MiniScript
 			this[key] = new MiniValue<T>(value);
 			return this;
 		}
+
+		public MiniValue<T> GetByPath(string path)
+		{
+			return BinaryOperatorDictionaryAccessor<T>.GetByPath(
+				this
+				, path.Split(BinaryOperatorDictionaryAccessor<T>.ConstOperationCode));
+		}
 	}
 }
