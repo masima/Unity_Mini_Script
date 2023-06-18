@@ -76,6 +76,19 @@ namespace MiniScript.Tests
 		}
 
 		[Test]
+		public void TestSimple_Comment()
+		{
+			string sentence = @"
+			a=1;
+			b=2;
+			a+b
+			";
+			var context = new Context();
+			MiniValue miniValue = _decoder.Decode(sentence);
+			Assert.AreEqual(miniValue.Evalute(context).Value, 3f);
+		}
+
+		[Test]
 		public void TestOperator()
 		{
 			var patterns = new(string sentence, float result)[]
