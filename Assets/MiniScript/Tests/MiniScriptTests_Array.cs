@@ -38,5 +38,29 @@ namespace MiniScript.Tests
 			}
 		}
 
+		[Test]
+		public void TestArray_Edit()
+		{
+			// 変数保存場所生成
+			var context = new Context();
+			{
+				var patterns = new (string sentence, float[] result)[]
+				{
+					("a=(1,2,3);a.add(4)", new float[] {1,2,3,4}),
+					("a=(1,2,3);a.clear()", new float[] {}),
+
+					("a=(1,2,3);a.insert(0,4)", new float[] {4,1,2,3}),
+					("a=(1,2,3);a.insert(1,4)", new float[] {1,4,2,3}),
+					("a=(1,1+1,3);a.insert(1,2+2)", new float[] {1,2+2,1+1,3}),
+					("a=1;b=2;c=3;array=(a,a+a,c);array.insert(a,b+b)", new float[] {1,2+2,1+1,3}),
+
+					("a=(1,2,3);a.removeat(1)", new float[] {1,3}),
+					("a=(1,2,3);(a.pop(),a.pop(),a.pop())", new float[] {3,2,1}),
+					("a=(1,2,3);(a.pop()+1,a.pop()+2,a.pop()*3)", new float[] {3+1,2+2,1*3}),
+				};
+
+				TestPatterns(patterns, context);
+			}
+		}
 	}
 }

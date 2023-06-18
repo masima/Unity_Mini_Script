@@ -80,9 +80,9 @@ namespace MiniScript
 			return _object as IContext<T>;
 		}
 
-		public List<MiniValue<T>> GetArray()
+		public MiniList<T> GetArray()
 		{
-			return _object as List<MiniValue<T>>;
+			return _object as MiniList<T>;
 		}
 
 
@@ -178,7 +178,7 @@ namespace MiniScript
 			_value = default;
 			_object = binaryOperator;
 		}
-		public MiniValue(List<MiniValue<T>> values)
+		public MiniValue(MiniList<T> values)
 		{
 			_valueType = (byte)EValueType.Array;
 			_value = Calculator.Convert(values.Count);

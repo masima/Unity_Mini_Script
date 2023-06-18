@@ -12,13 +12,13 @@ namespace MiniScript
 		public override string OperatorCode => ",";
 
 		private List<MiniValue<T>> _values;
-		private List<MiniValue<T>> _results;
+		private MiniList<T> _results;
 
 
 		public static MiniValue<T> InstantiateSingleParameter(MiniValue<T> value)
 		{
 			var arraySeparater = new BinaryOperatorArraySeparater<T>();
-			arraySeparater._results = new List<MiniValue<T>>();
+			arraySeparater._results = new MiniList<T>();
 			arraySeparater._values = new List<MiniValue<T>>();
 			arraySeparater._values.Clear();
 			if (value.ValueType.IsValid())
@@ -36,7 +36,7 @@ namespace MiniScript
 			base.Finailze(rpnStack);
 			if (!Left.TryGetOperator(out BinaryOperatorArraySeparater<T> separater))
 			{
-				_results = new List<MiniValue<T>>();
+				_results = new MiniList<T>();
 				_values = new List<MiniValue<T>>();
 				_values.Add(Left);
 				_values.Add(Right);

@@ -14,6 +14,7 @@ using MiniScript;
 namespace MiniScript.Tests
 {
 	using MiniValue = MiniValue<float>;
+	using MiniList = MiniList<float>;
 	public class Decoder : MiniDecoder<float> {}
 	public class Context : Context<float> {}
 
@@ -325,13 +326,29 @@ namespace MiniScript.Tests
 		{
 			foreach (var pattern in patterns)
 			{
-				if (!TryGetDecodedMinValue(pattern.sentence, out MiniValue miniValue))
-				{
-					continue;
-				}
+				MiniValue miniValue = GetDecodedMinValue(pattern.sentence);
 				float result = miniValue.Evalute(context).FloatValue;
 				Assert.AreEqual(result, pattern.result
 					, $"{pattern.sentence} result:{pattern.result}");
+			}
+		}
+
+		public void TestPatterns(
+			(string sentence, float[] result)[] patterns
+			, Context context = null
+			)
+		{
+			foreach (var pattern in patterns)
+			{
+				MiniValue miniValue = GetDecodedMinValue(pattern.sentence);
+				MiniList result = miniValue.Evalute(context).GetArray();
+				Assert.AreEqual(result.Count, pattern.result.Length
+					, $"{pattern.sentence} not same size:{result.Count},{pattern.result.Length}");
+				for (int i = 0; i < result.Count; i++)
+				{
+					Assert.AreEqual(result[i].Value, pattern.result[i]
+						, $"{pattern.sentence} not same index:{i} value:{result[i].Value},{pattern.result[i]}");
+				}
 			}
 		}
 
@@ -348,15 +365,15 @@ namespace MiniScript.Tests
 		{
 			_sentenceCache.Clear();
 		}
-		private bool TryGetDecodedMinValue(string sentence, out MiniValue miniValue)
+		private MiniValue GetDecodedMinValue(string sentence)
 		{
-			if (_sentenceCache.TryGetValue(sentence, out miniValue))
+			if (_sentenceCache.TryGetValue(sentence, out MiniValue miniValue))
 			{
-				return true;
+				return miniValue;
 			}
 			miniValue = _decoder.Decode(sentence);
 			_sentenceCache[sentence] = miniValue;
-			return true;
+			return miniValue;
 		}
 
 		#endregion
