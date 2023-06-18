@@ -79,13 +79,15 @@ namespace MiniScript.Tests
 		public void TestSimple_Comment()
 		{
 			string sentence = @"
-			a=1;
+			a=1;// comment1
 			b=2;
+			// comment2
 			a+b
 			";
 			var context = new Context();
 			MiniValue miniValue = _decoder.Decode(sentence);
-			Assert.AreEqual(miniValue.Evalute(context).Value, 3f);
+			float result = miniValue.Evalute(context).Value;
+			Assert.AreEqual(result, 3f);
 		}
 
 		[Test]

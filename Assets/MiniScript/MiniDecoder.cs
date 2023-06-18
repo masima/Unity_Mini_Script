@@ -80,6 +80,7 @@ namespace MiniScript
 		
 		static readonly Regex s_regexConstValue = new Regex(@"-?\d+(\.\d*)?");
 		static readonly Regex s_regexWord = new Regex(@"\w+");
+		const string CommentCode = "//";
 		
 
 		readonly List<MiniValue<T>> _elements = new();
@@ -110,6 +111,11 @@ namespace MiniScript
 					++startat;
 					return list;
 				}
+				if (TrimComment(sentence, ref startat))
+				{
+					continue;
+				}
+
 				switch (c)
 				{
 					case '(':
@@ -248,6 +254,40 @@ namespace MiniScript
 			default:
 				return false;
 			}
+		}
+		static bool IsReturnCode(char c)
+		{
+			switch (c)
+			{
+				case '\r':
+				case '\n':
+					return true;
+				default:
+					return false;
+			}
+		}
+		static bool TrimComment(string sentence, ref int startat)
+		{
+			if (sentence.Length < startat + CommentCode.Length)
+			{
+				return false;
+			}
+			if (sentence[startat..(startat + CommentCode.Length)] == CommentCode)
+			{
+				startat += CommentCode.Length;
+				// コメント部分スキップ
+				do 
+				{
+					if (sentence.Length <= startat)
+					{
+						return true;
+					}
+				} while (!IsReturnCode(sentence[startat++]));
+				// 改行削除
+				while (IsReturnCode(sentence[startat++]));
+				return true;
+			}
+			return false;
 		}
 		static bool TryGetConstValue(string sentence, int startat, out string value)
 		{
