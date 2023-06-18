@@ -46,6 +46,8 @@ namespace MiniScript.Tests
 			{
 				var patterns = new (string sentence, float[] result)[]
 				{
+					("a=();a.add(1);a.add(2,3)", new float[] {1,2,3}),
+
 					("a=(1,2,3);a.add(4)", new float[] {1,2,3,4}),
 					("a=(1,2,3);a.clear()", new float[] {}),
 

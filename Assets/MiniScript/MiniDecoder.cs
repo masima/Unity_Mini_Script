@@ -140,7 +140,16 @@ namespace MiniScript
 						}
 						else
 						{
-							list.Add(childValue);
+							if (childValue.ValueType.IsValid())
+							{
+								list.Add(childValue);
+							}
+							else
+							{
+								// 空配列
+								var arraySeparaterValue = BinaryOperatorArraySeparater<T>.InstantiateSingleParameter(childValue);
+								list.Add(arraySeparaterValue);
+							}
 						}
 						isLastIsValue = true;
 						break;
