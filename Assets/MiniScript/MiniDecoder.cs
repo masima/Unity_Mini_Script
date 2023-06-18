@@ -242,6 +242,8 @@ namespace MiniScript
 			case ' ':
 			case '\t':
 			case '　':
+			case '\n':
+			case '\r':
 				return true;
 			default:
 				return false;
