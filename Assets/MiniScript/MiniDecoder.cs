@@ -121,11 +121,7 @@ namespace MiniScript
 					case '(':
 					{
 						++startat;
-						if (_childDecoder is null)
-						{
-							_childDecoder = new MiniDecoder<T>();
-						}
-						var childValue = _childDecoder.DecodeInner(sentence, ref startat , ')');
+						var childValue = DecodeChild(sentence, ref startat, ')');
 						if (isLastIsValue)
 						{
 							list.Add(new MiniValue<T>(
@@ -157,11 +153,7 @@ namespace MiniScript
 							{
 								// 配列参照
 								++startat;
-								if (_childDecoder is null)
-								{
-									_childDecoder = new MiniDecoder<T>();
-								}
-								var childValue = _childDecoder.DecodeInner(sentence, ref startat , ']');
+								var childValue = DecodeChild(sentence, ref startat, ']');
 								list.Add(new MiniValue<T>(
 									new BinaryOperatorArrayAccessor<T>()
 									));
@@ -219,6 +211,15 @@ namespace MiniScript
 			}
 
 			return list;
+		}
+		MiniValue<T> DecodeChild(string sentence, ref int startat, char endCode)
+		{
+			if (_childDecoder is null)
+			{
+				_childDecoder = new MiniDecoder<T>();
+			}
+			var childValue = _childDecoder.DecodeInner(sentence, ref startat , endCode);
+			return childValue;
 		}
 		static string GetErrorPositionMessage(string sentence, int startat)
 		{
