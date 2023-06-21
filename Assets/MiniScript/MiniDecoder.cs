@@ -124,6 +124,7 @@ namespace MiniScript
 						var childValue = DecodeChild(sentence, ref startat, ')');
 						if (isLastIsValue)
 						{
+							// 関数呼び出し
 							list.Add(new MiniValue<T>(
 								new BinaryOperatorFunction<T>()
 								));
@@ -134,6 +135,7 @@ namespace MiniScript
 							}
 							else
 							{
+								// 引数が１つでも配列として渡す
 								var arraySeparaterValue = BinaryOperatorArraySeparater<T>.InstantiateSingleParameter(childValue);
 								list.Add(arraySeparaterValue);
 							}
@@ -151,6 +153,14 @@ namespace MiniScript
 								list.Add(arraySeparaterValue);
 							}
 						}
+						isLastIsValue = true;
+						break;
+					}
+					case '{':
+					{
+						++startat;
+						var childValue = DecodeChild(sentence, ref startat, '}');
+						list.Add(childValue);
 						isLastIsValue = true;
 						break;
 					}
@@ -372,15 +382,9 @@ namespace MiniScript
 				if (value.ValueType.IsOperator()
 					&& !value.GetOperator().IsFinalized)
 				{
-					IOperator binaryOperator = value.GetOperator();
-					// Get right value
-					if (!enumerator.MoveNext())
-					{
-						throw new FormatException("right value nothing.");
-					}
-					int insertIndex = GetInsertPosition(binaryOperator.Priority);
-					_rpn.Insert(insertIndex, enumerator.Current);
-					_rpn.Insert(insertIndex + 1, value);
+					var binaryOperator = value.GetOperator() as IOperator<T>;
+					enumerator = binaryOperator.ConvertToRpn(enumerator, _rpn, out int insertIndex);
+					_rpn.Insert(insertIndex, value);
 				}
 				else
 				{
@@ -388,11 +392,14 @@ namespace MiniScript
 				}
 			}
 		}
-		int GetInsertPosition(int operatorPriority)
+		public static int GetInsertPosition(
+			IReadOnlyList<MiniValue<T>> rpn
+			, int operatorPriority
+			)
 		{
-			for (int i = _rpn.Count - 1; 0 <= i; --i)
+			for (int i = rpn.Count - 1; 0 <= i; --i)
 			{
-				var value = _rpn[i];
+				var value = rpn[i];
 				if (!value.ValueType.IsOperator()
 					|| value.GetOperator().IsFinalized)
 				{

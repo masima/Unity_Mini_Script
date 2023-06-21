@@ -31,6 +31,24 @@ namespace MiniScript
 			return new MiniValue<T>(this);
 		}
 
+		public virtual List<MiniValue<T>>.Enumerator ConvertToRpn(
+			List<MiniValue<T>>.Enumerator enumerator
+			, List<MiniValue<T>> rpn
+			, out int insertIndex
+			)
+		{
+			// Get right value
+			if (!enumerator.MoveNext())
+			{
+				throw new FormatException("right value nothing.");
+			}
+			insertIndex = MiniDecoder<T>.GetInsertPosition(rpn, Priority);
+			rpn.Insert(insertIndex++, enumerator.Current);
+			// _rpn.Insert(insertIndex, value);
+
+			return enumerator;
+		}
+
 
 		public abstract MiniValue<T> Evalute(IContext<T> context);
 	}

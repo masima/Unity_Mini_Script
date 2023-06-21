@@ -19,6 +19,12 @@ namespace MiniScript
 		, IComparable<T>
 	{
 		MiniValue<T> Evalute(IContext<T> context);
+
+		List<MiniValue<T>>.Enumerator ConvertToRpn(
+			List<MiniValue<T>>.Enumerator enumerator
+			, List<MiniValue<T>> rpn
+			, out int insertIndex
+			);
 	}
 
 	public interface IOperatorOnFinalized
