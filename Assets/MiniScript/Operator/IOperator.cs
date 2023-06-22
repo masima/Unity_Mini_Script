@@ -20,6 +20,7 @@ namespace MiniScript
 	{
 		MiniValue<T> Evalute(IContext<T> context);
 
+		MiniValue<T> Finailze(Stack<MiniValue<T>> rpnStack);
 		List<MiniValue<T>>.Enumerator ConvertToRpn(
 			List<MiniValue<T>>.Enumerator enumerator
 			, List<MiniValue<T>> rpn

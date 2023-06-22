@@ -128,8 +128,7 @@ namespace MiniScript
 							list.Add(new MiniValue<T>(
 								new BinaryOperatorFunction<T>()
 								));
-							if (childValue.ValueType.IsOperator()
-								&& childValue.GetBinaryOperator<BinaryOperatorArraySeparater<T>>() is not null)
+							if (childValue.TryGetOperator<BinaryOperatorArraySeparater<T>>(out var _))
 							{
 								list.Add(childValue);
 							}
@@ -434,7 +433,7 @@ namespace MiniScript
 				if (value.ValueType.IsOperator()
 					&& !value.GetOperator().IsFinalized)
 				{
-					var op = value.GetBinaryOperator<BinaryOperator<T>>();
+					var op = value.GetOperator<IOperator<T>>();
 					pushValue = op.Finailze(_rpnStack);
 					if (op is IOperatorOnFinalized opOnFinalized)
 					{

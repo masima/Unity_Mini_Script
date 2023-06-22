@@ -53,18 +53,14 @@ namespace MiniScript
 			operatorInstance = default;
 			return false;
 		}
-		public TOperator GetBinaryOperator<TOperator>()
-			where TOperator : BinaryOperator<T>
+		public TOperator GetOperator<TOperator>()
+			where TOperator : class, IOperator
 		{
 			return _object as TOperator;
 		}
 		public IOperator GetOperator()
 		{
 			return _object as IOperator;
-		}
-		public int GetBinaryOperatorPriority()
-		{
-			return (_object as BinaryOperator<T>).Priority;
 		}
 		public TObject GetObject<TObject>()
 			where TObject : class
