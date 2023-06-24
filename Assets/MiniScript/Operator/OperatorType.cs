@@ -2,7 +2,9 @@
 {
 	public enum OperatorType
 	{
-		Function =  PriorityUnit * 0,
+		FlowControl =  PriorityUnit * 0,
+
+		Function =  PriorityUnit * 1,
 		ArrayAccessor,
 		DictionaryAccessor,
 

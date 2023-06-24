@@ -7,23 +7,26 @@ using System.Linq;
 namespace MiniScript
 {
 	using System.Text.RegularExpressions;
+
+	public struct OperatorInfo
+	{
+		internal Type Type;
+		internal string OperatorCode;
+	}
+
 	public class MiniDecoder<T>
 		where T : struct, IComparable, IFormattable, IConvertible, IEquatable<T>
 		, IComparable<T>
 	{
-		private struct OperatorInfo
-		{
-			internal Type Type;
-			internal string OperatorCode;
-		}
-
 		/// <summary>
 		/// 演算子リスト
 		/// </summary>
-		private static readonly List<OperatorInfo> s_unrayOperators = new();
+		// private static readonly List<OperatorInfo> s_unrayOperators = new();
+		private static readonly List<OperatorInfo> s_flowControlOperators = new();
 		private static readonly List<OperatorInfo> s_binaryOperators = new();
 		public static void Setup(Assembly assembly = null)
 		{
+			s_flowControlOperators.Clear();
 			s_binaryOperators.Clear();
 
 			Assembly miniDecoderAssembly = typeof(MiniDecoder<T>).Assembly;
@@ -41,21 +44,35 @@ namespace MiniScript
 					_.BaseType != null
 					&& !_.IsAbstract 
 					&& _.BaseType.IsGenericType 
-					&& _.BaseType.GetGenericTypeDefinition() == typeof(BinaryOperator<>)
+					// && _.BaseType.GetGenericTypeDefinition() == typeof(IOperator<>)
 					)
 				.ToArray();
 
 			foreach (Type type in binaryOperatorTypes)
 			{
+				List<OperatorInfo> infos;
+				var genericTypeDefinition = type.BaseType.GetGenericTypeDefinition();
+				if (genericTypeDefinition == typeof(BinaryOperator<>))
+				{
+					infos = s_binaryOperators;
+				}
+				else if (genericTypeDefinition == typeof(FlowControlOperator<>))
+				{
+					infos = s_flowControlOperators;
+				}
+				else
+				{
+					continue;
+				}
 				var genericType = type.MakeGenericType(typeof(T));
-				var propertyInfo = genericType.GetProperty(nameof(BinaryOperator<T>.OperatorCode));
+				var propertyInfo = genericType.GetProperty(nameof(IOperator<T>.OperatorCode));
 				if (null == propertyInfo)
 				{
 					continue;
 				}
 				var defaultValue = Activator.CreateInstance(genericType);
 				string code = (string)propertyInfo.GetValue(defaultValue);
-				s_binaryOperators.Add(new OperatorInfo
+				infos.Add(new OperatorInfo
 				{
 					Type = genericType,
 					OperatorCode = code,
@@ -192,9 +209,23 @@ namespace MiniScript
 						}
 						else
 						{
-							// 値
+							if (TryGetFlowControlOperator(sentence, startat, out OperatorInfo flowControlOperatorInfo))
+							{
+								// 制御
+								var flowControlOperator = Activator.CreateInstance(
+									flowControlOperatorInfo.Type)
+									as FlowControlOperator<T>;
+								startat += flowControlOperatorInfo.OperatorCode.Length;
+								list.Add(flowControlOperator.SplitSentence(
+									this
+									, sentence
+									, ref startat
+									));
+							}
+							else 
 							if (TryGetConstValue(sentence, startat, out string value))
 							{
+								// 値
 								list.Add(MiniValue<T>.GetConstValue(value));
 								startat += value.Length;
 								isLastIsValue = true;
@@ -230,6 +261,8 @@ namespace MiniScript
 
 			return list;
 		}
+
+		public delegate MiniValue<T> DecodeChildCb(string sentence, ref int startat, char endCode);
 		MiniValue<T> DecodeChild(string sentence, ref int startat, char endCode)
 		{
 			if (_childDecoder is null)
@@ -238,6 +271,31 @@ namespace MiniScript
 			}
 			var childValue = _childDecoder.DecodeInner(sentence, ref startat , endCode);
 			return childValue;
+		}
+		public bool TryGetStatement(
+			string sentence
+			, ref int startat
+			, string beginEnd
+			, out MiniValue<T> value)
+		{
+			while (startat < sentence.Length)
+			{
+				char c = sentence[startat];
+				if (IsSpace(c))
+				{
+					++startat;
+					continue;
+				}
+				if (c == beginEnd[0])
+				{
+					++startat;
+					value = DecodeChild(sentence, ref startat, beginEnd[1]);
+					return true;
+				}
+				break;
+			}
+			value = default;
+			return false;
 		}
 		static string GetErrorPositionMessage(string sentence, int startat)
 		{
@@ -340,7 +398,24 @@ namespace MiniScript
 		}
 
 
-		bool TryGetOperator(string sentence, int startat, out OperatorInfo value)
+		public bool TryGetFlowControlOperator(string sentence, int startat, out OperatorInfo value)
+		{
+			foreach (OperatorInfo op in s_flowControlOperators)
+			{
+				if (0 == string.CompareOrdinal(
+						sentence, startat
+						, op.OperatorCode, 0, op.OperatorCode.Length))
+				{
+					value = op;
+					return true;
+				}
+			}
+
+			value = default;
+			return false;
+		}
+
+		public bool TryGetOperator(string sentence, int startat, out OperatorInfo value)
 		{
 			foreach (OperatorInfo op in s_binaryOperators)
 			{
@@ -357,20 +432,6 @@ namespace MiniScript
 			return false;
 		}
 
-		private BinaryOperator<T> CreateBinaryOperator(string code)
-		{
-			foreach (var info in s_binaryOperators)
-			{
-				if (info.OperatorCode == code)
-				{
-					return (BinaryOperator<T>)Activator.CreateInstance(info.Type);
-				}
-			}
-
-			throw new Exception($"no supprot operator : {code}");
-		}
- 
- 
  		void ConvertToRpn(List<MiniValue<T>> elements)
 		{
 			_rpn.Clear();
@@ -381,9 +442,15 @@ namespace MiniScript
 				if (value.ValueType.IsOperator()
 					&& !value.GetOperator().IsFinalized)
 				{
-					var binaryOperator = value.GetOperator() as IOperator<T>;
-					enumerator = binaryOperator.ConvertToRpn(enumerator, _rpn, out int insertIndex);
-					_rpn.Insert(insertIndex, value);
+					if (value.TryGetOperator(out BinaryOperator<T> binaryOperator))
+					{
+						enumerator = binaryOperator.ConvertToRpn(enumerator, _rpn, out int insertIndex);
+						_rpn.Insert(insertIndex, value);
+					}
+					else
+					{
+						throw new InvalidOperationException();
+					}
 				}
 				else
 				{
@@ -433,14 +500,20 @@ namespace MiniScript
 				if (value.ValueType.IsOperator()
 					&& !value.GetOperator().IsFinalized)
 				{
-					var op = value.GetOperator<IOperator<T>>();
-					pushValue = op.Finailze(_rpnStack);
-					if (op is IOperatorOnFinalized opOnFinalized)
+					if (value.TryGetOperator(out BinaryOperator<T> op))
 					{
-						if (opOnFinalized.IsOnFinishedRequired)
+						pushValue = op.Finailze(_rpnStack);
+						if (op is IOperatorOnFinalized opOnFinalized)
 						{
-							_onFinalizedList.Add(op as IOperatorOnFinalized);
+							if (opOnFinalized.IsOnFinishedRequired)
+							{
+								_onFinalizedList.Add(op as IOperatorOnFinalized);
+							}
 						}
+					}
+					else
+					{
+						throw new InvalidOperationException();
 					}
 				}
 				else

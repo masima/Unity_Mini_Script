@@ -24,13 +24,6 @@ namespace MiniScript
 			}
 		}
 
-		public virtual MiniValue<T> Finailze(Stack<MiniValue<T>> rpnStack)
-		{
-			Right = rpnStack.Pop();
-			Left = rpnStack.Pop();
-			return new MiniValue<T>(this);
-		}
-
 		public virtual List<MiniValue<T>>.Enumerator ConvertToRpn(
 			List<MiniValue<T>>.Enumerator enumerator
 			, List<MiniValue<T>> rpn
@@ -47,6 +40,13 @@ namespace MiniScript
 			// _rpn.Insert(insertIndex, value);
 
 			return enumerator;
+		}
+
+		public virtual MiniValue<T> Finailze(Stack<MiniValue<T>> rpnStack)
+		{
+			Right = rpnStack.Pop();
+			Left = rpnStack.Pop();
+			return new MiniValue<T>(this);
 		}
 
 

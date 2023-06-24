@@ -8,7 +8,7 @@ namespace MiniScript
 	public interface IOperator
 	{
 		//BinaryOperatorType BinaryOperatorType { get; }
-		//string OperatorCode { get; }
+		string OperatorCode { get; }
 		int Priority { get; }
 		bool IsFinalized { get; }
 	}
@@ -19,13 +19,6 @@ namespace MiniScript
 		, IComparable<T>
 	{
 		MiniValue<T> Evalute(IContext<T> context);
-
-		MiniValue<T> Finailze(Stack<MiniValue<T>> rpnStack);
-		List<MiniValue<T>>.Enumerator ConvertToRpn(
-			List<MiniValue<T>>.Enumerator enumerator
-			, List<MiniValue<T>> rpn
-			, out int insertIndex
-			);
 	}
 
 	public interface IOperatorOnFinalized
