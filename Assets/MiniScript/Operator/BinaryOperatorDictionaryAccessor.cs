@@ -49,7 +49,7 @@ namespace MiniScript
 		}
 		public static MiniValue<T> GetByPath(IContext<T> context, string[] hierarchy)
 		{
-			MiniValue<T> miniValue = new();
+			MiniValue<T> miniValue = default;
 			int lastIndex = hierarchy.Length - 1;
 			for	(int i = 0; i < lastIndex; i++)
 			{

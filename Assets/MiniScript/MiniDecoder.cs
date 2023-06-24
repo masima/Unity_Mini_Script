@@ -79,6 +79,7 @@ namespace MiniScript
 				});
 			}
 			// 文字数の多い順に並べる
+			s_flowControlOperators.Sort((left, right) => String.CompareOrdinal(right.OperatorCode, left.OperatorCode));
 			s_binaryOperators.Sort((left, right) => String.CompareOrdinal(right.OperatorCode, left.OperatorCode));
 		}
 
@@ -194,7 +195,7 @@ namespace MiniScript
 									));
 								list.Add(childValue);
 							}
-							else if (TryGetOperator(sentence, startat, out OperatorInfo operatorInfo))
+							else if (TryGetBinaryOperator(sentence, startat, out OperatorInfo operatorInfo))
 							{
 								list.Add(new MiniValue<T>(
 									Activator.CreateInstance(operatorInfo.Type)
@@ -230,7 +231,7 @@ namespace MiniScript
 								startat += value.Length;
 								isLastIsValue = true;
 							}
-							else if (TryGetOperator(sentence, startat, out OperatorInfo operatorInfo))
+							else if (TryGetBinaryOperator(sentence, startat, out OperatorInfo operatorInfo))
 							{
 								// ２項演算子
 								list.Add(new MiniValue<T>(
@@ -415,7 +416,7 @@ namespace MiniScript
 			return false;
 		}
 
-		public bool TryGetOperator(string sentence, int startat, out OperatorInfo value)
+		public bool TryGetBinaryOperator(string sentence, int startat, out OperatorInfo value)
 		{
 			foreach (OperatorInfo op in s_binaryOperators)
 			{
