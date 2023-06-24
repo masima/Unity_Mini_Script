@@ -21,7 +21,7 @@ namespace MiniScript.Tests
 		{
 			var patterns = new(string sentence, float result)[]
 			{
-				// ("1+2-3", 1+2-3),
+				("1+2-3", 1+2-3),
 				("1+(2-3)", 1+(2-3)),
 
 				("1+2*3", 1+2*3),

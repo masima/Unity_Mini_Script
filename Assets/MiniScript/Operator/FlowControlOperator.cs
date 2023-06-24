@@ -52,36 +52,8 @@ namespace MiniScript
 
 			var subOperator = Activator.CreateInstance(operatorInfo.Type) as FlowControlOperator<T>;
 			subOperator.Judge = flowControlValue;
-			// subOperator.Statement = subOperator.SplitSentence(decoder, sentence, ref startat);
 			return subOperator.SplitSentence(decoder, sentence, ref startat);
 		}
-
-		// public virtual List<MiniValue<T>>.Enumerator ConvertToRpn(
-		// 	List<MiniValue<T>>.Enumerator enumerator
-		// 	, List<MiniValue<T>> rpn
-		// 	, out int insertIndex
-		// 	)
-		// {
-		// 	// 判定文取得
-		// 	if (!enumerator.MoveNext())
-		// 	{
-		// 		throw new FormatException("judge value nothing.");
-		// 	}
-		// 	MiniValue<T> judge = enumerator.Current;
-		// 	// 実行文取得
-		// 	if (!enumerator.MoveNext())
-		// 	{
-		// 		throw new FormatException("sentence nothing.");
-		// 	}
-		// 	MiniValue<T> sentence = enumerator.Current;
-
-		// 	insertIndex = rpn.Count;//MiniDecoder<T>.GetInsertPosition(rpn, Priority);
-		// 	rpn.Insert(insertIndex++, sentence);
-		// 	rpn.Insert(insertIndex++, judge);
-		// 	// _rpn.Insert(insertIndex, value);
-
-		// 	return enumerator;
-		// }
 
 		public virtual MiniValue<T> Finailze(Stack<MiniValue<T>> rpnStack)
 		{
