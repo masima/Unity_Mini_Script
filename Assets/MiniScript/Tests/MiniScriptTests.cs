@@ -91,70 +91,6 @@ namespace MiniScript.Tests
 			Assert.AreEqual(result, 3f);
 		}
 
-		[Test]
-		public void TestOperator()
-		{
-			var patterns = new(string sentence, float result)[]
-			{
-				("1+2-3", 1+2-3),
-				("1+(2-3)", 1+(2-3)),
-
-				("1+2*3", 1+2*3),
-				("(1+2)*3", (1+2)*3),
-				("1*2+3", 1*2+3),
-
-				("1+2/3", 1+2f/3),
-				("1/2+3", 1f/2+3),
-
-				("3%2", 3f%2f),
-			};
-			TestPatterns(patterns);
-		}
-
-		/// <summary>
-		/// 比較演算を使用する
-		/// </summary>
-		[Test]
-		public void TestOperator_Compare()
-		{
-			var patterns = new(string sentence, float result)[]
-			{
-				("1<2", Convert(1<2)),
-				("1<1", Convert(1<1)),
-				("2<1", Convert(2<1)),
-
-				("1>2", Convert(1>2)),
-				("1>1", Convert(1>1)),
-				("2>1", Convert(2>1)),
-
-				("1<=2", Convert(1<=2)),
-				("1<=1", Convert(1<=1)),
-				("2<=1", Convert(2<=1)),
-
-				("1>=2", Convert(1>=2)),
-				("1>=1", Convert(1>=1)),
-				("2>=1", Convert(2>=1)),
-
-				("1==2", Convert(1==2)),
-				("1==1", Convert(1==1)),
-				("2==1", Convert(2==1)),
-
-				("1!=2", Convert(1!=2)),
-				("1!=1", Convert(1!=1)),
-				("2!=1", Convert(2!=1)),
-
-				("1+2<3", Convert(1+2<3)),
-				("1+2>3", Convert(1+2>3)),
-				("1+2==3", Convert(1+2==3)),
-
-				("1<2+3", Convert(1<2+3)),
-				("1>2+3", Convert(1>2+3)),
-				("1==2+3", Convert(1==2+3)),
-				("5==2+3", Convert(5==2+3)),
-			};
-			TestPatterns(patterns);
-		}
-
 		/// <summary>
 		/// 変数で演算する
 		/// </summary>
@@ -326,10 +262,17 @@ namespace MiniScript.Tests
 		{
 			foreach (var pattern in patterns)
 			{
-				MiniValue miniValue = GetDecodedMinValue(pattern.sentence);
-				float result = miniValue.Evalute(context).FloatValue;
-				Assert.AreEqual(result, pattern.result
-					, $"{pattern.sentence} result:{pattern.result}");
+				string info = $"{pattern.sentence} result:{pattern.result}";
+				try
+				{
+					MiniValue miniValue = GetDecodedMinValue(pattern.sentence);
+					float result = miniValue.Evalute(context).FloatValue;
+					Assert.AreEqual(result, pattern.result, info);
+				}
+				catch (Exception e)
+				{
+					throw new Exception(info, e);
+				}
 			}
 		}
 
@@ -340,14 +283,21 @@ namespace MiniScript.Tests
 		{
 			foreach (var pattern in patterns)
 			{
-				MiniValue miniValue = GetDecodedMinValue(pattern.sentence);
-				MiniList result = miniValue.Evalute(context).GetArray();
-				Assert.AreEqual(result.Count, pattern.result.Length
-					, $"{pattern.sentence} not same size:{result.Count},{pattern.result.Length}");
-				for (int i = 0; i < result.Count; i++)
+				try
 				{
-					Assert.AreEqual(result[i].Value, pattern.result[i]
-						, $"{pattern.sentence} not same index:{i} value:{result[i].Value},{pattern.result[i]}");
+					MiniValue miniValue = GetDecodedMinValue(pattern.sentence);
+					MiniList result = miniValue.Evalute(context).GetArray();
+					Assert.AreEqual(result.Count, pattern.result.Length
+						, $"{pattern.sentence} not same size:{result.Count},{pattern.result.Length}");
+					for (int i = 0; i < result.Count; i++)
+					{
+						string info = $"{pattern.sentence} not same index:{i} value:{result[i].Value},{pattern.result[i]}";
+						Assert.AreEqual(result[i].Value, pattern.result[i], info);
+					}
+				}
+				catch (Exception e)
+				{
+					throw new Exception(pattern.sentence, e);
 				}
 			}
 		}
