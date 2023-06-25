@@ -43,23 +43,13 @@ namespace MiniScript
 			{
 				return flowControlValue;
 			}
-			if (operatorInfo.Type.BaseType.GetGenericTypeDefinition() != typeof(FlowControlOperator<>))
-			{
-				return flowControlValue;
-			}
+
 			// else
 			startat += operatorInfo.OperatorCode.Length;
 
 			var subOperator = Activator.CreateInstance(operatorInfo.Type) as FlowControlOperator<T>;
 			subOperator.Judge = flowControlValue;
 			return subOperator.SplitSentence(decoder, sentence, ref startat);
-		}
-
-		public virtual MiniValue<T> Finailze(Stack<MiniValue<T>> rpnStack)
-		{
-			Judge = rpnStack.Pop();
-			Statement = rpnStack.Pop();
-			return new MiniValue<T>(this);
 		}
 
 
