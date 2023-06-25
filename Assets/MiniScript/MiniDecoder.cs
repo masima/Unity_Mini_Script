@@ -463,7 +463,6 @@ namespace MiniScript
 					if (value.TryGetOperator(out BinaryOperator<T> binaryOperator))
 					{
 						enumerator = binaryOperator.ConvertToRpn(enumerator, _rpn, out int insertIndex);
-						_rpn.Insert(insertIndex, value);
 					}
 					else
 					{

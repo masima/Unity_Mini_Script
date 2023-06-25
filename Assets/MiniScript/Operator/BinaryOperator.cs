@@ -37,7 +37,7 @@ namespace MiniScript
 			}
 			insertIndex = MiniDecoder<T>.GetInsertPosition(rpn, Priority);
 			rpn.Insert(insertIndex++, enumerator.Current);
-			// _rpn.Insert(insertIndex, value);
+			rpn.Insert(insertIndex, new MiniValue<T>(this));
 
 			return enumerator;
 		}

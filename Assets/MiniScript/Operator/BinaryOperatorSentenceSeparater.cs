@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MiniScript
 {
@@ -9,6 +10,28 @@ namespace MiniScript
 	{
 		public override OperatorType OperatorType => OperatorType.SentenceSeparator;
 		public override string OperatorCode => ";";
+
+		public override List<MiniValue<T>>.Enumerator ConvertToRpn(
+			List<MiniValue<T>>.Enumerator enumerator
+			, List<MiniValue<T>> rpn
+			, out int insertIndex
+			)
+		{
+			insertIndex = MiniDecoder<T>.GetInsertPosition(rpn, Priority);
+			// Get right value
+			if (enumerator.MoveNext())
+			{
+				rpn.Insert(insertIndex++, enumerator.Current);
+				rpn.Insert(insertIndex, new MiniValue<T>(this));
+			}
+			else
+			{
+				// 右辺値無し
+			}
+
+			return enumerator;
+		}
+
 
 		public override MiniValue<T> Evalute(IContext<T> context)
 		{
