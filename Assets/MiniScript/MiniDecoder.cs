@@ -79,8 +79,8 @@ namespace MiniScript
 				});
 			}
 			// 文字数の多い順に並べる
-			s_flowControlOperators.Sort((left, right) => String.CompareOrdinal(right.OperatorCode, left.OperatorCode));
-			s_binaryOperators.Sort((left, right) => String.CompareOrdinal(right.OperatorCode, left.OperatorCode));
+			s_flowControlOperators.Sort((left, right) => right.OperatorCode.Length - left.OperatorCode.Length);
+			s_binaryOperators.Sort((left, right) => right.OperatorCode.Length - left.OperatorCode.Length);
 		}
 
 
