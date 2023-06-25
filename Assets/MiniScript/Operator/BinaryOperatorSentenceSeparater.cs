@@ -21,7 +21,17 @@ namespace MiniScript
 			// Get right value
 			if (enumerator.MoveNext())
 			{
-				rpn.Insert(insertIndex++, enumerator.Current);
+				MiniValue<T> rightValue = enumerator.Current;
+				while (rightValue.TryGetOperator(out BinaryOperatorSentenceSeparater<T> _))
+				{
+					// 空文
+					if (!enumerator.MoveNext())
+					{
+						return enumerator;
+					}
+					rightValue = enumerator.Current;
+				}
+				rpn.Insert(insertIndex++, rightValue);
 				rpn.Insert(insertIndex, new MiniValue<T>(this));
 			}
 			else

@@ -222,6 +222,8 @@ namespace MiniScript
 									, sentence
 									, ref startat
 									));
+								// 文を分割しておく
+								list.Add(new MiniValue<T>(new BinaryOperatorSentenceSeparater<T>()));
 							}
 							else 
 							if (TryGetConstValue(sentence, startat, out string value))
