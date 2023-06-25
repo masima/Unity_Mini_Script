@@ -80,5 +80,78 @@ namespace MiniScript.Tests
 			TestPatterns(patterns);
 		}
 
+		/// <summary>
+		/// 変数で演算する
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <param name="c"></param>
+		[Test]
+		public void TestVariable(
+			[Values(1,2,3,5,7,11)] float a
+			, [Values(1,2,3,5,7,11)] float b
+			, [Values(1,2,3,5,7,11)] float c
+			)
+		{
+			// 変数保存場所生成
+			var context = new Context();
+			// 変数値設定
+			context
+				.Set(nameof(a), a)
+				.Set(nameof(b), b)
+				.Set(nameof(c), c)
+				;
+			{
+				var patterns = new (string sentence, float result)[]
+				{
+					("a+b+c", a+b+c),
+					("a-b+c", a-b+c),
+					("a+b-c", a+b-c),
+
+					("a+b*c", a+b*c),
+					("a*b+c", a*b+c),
+
+					("a+b/c", a+b/c),
+					("a/b+c", a/b+c),
+				};
+				TestPatterns(patterns, context);
+			}
+		}
+
+		/// <summary>
+		/// 論理式で判定する
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <param name="c"></param>
+		[Test]
+		public void TestVariable_Logical(
+			[Values(1,2,3,5,7,11)] float a
+			, [Values(1,2,3,5,7,11)] float b
+			, [Values(1,2,3,5,7,11)] float c
+			)
+		{
+			// 変数保存場所生成
+			var context = new Context();
+			// 変数値設定
+			context
+				.Set(nameof(a), a)
+				.Set(nameof(b), b)
+				.Set(nameof(c), c)
+				;
+			{
+				var patterns = new (string sentence, float result)[]
+				{
+					("a+b==c || a==b+c", Convert(a+b==c || a==b+c)),
+					("a*b==c || a==b*c", Convert(a*b==c || a==b*c)),
+
+					("a==b || b==c", Convert(a==b || b==c)),
+					("a==b || b==c && a==c", Convert(a==b || b==c && a==c)),
+					("a==b && b==c || a==c", Convert(a==b && b==c || a==c)),
+				};
+				TestPatterns(patterns, context);
+			}
+		}
+
 	}
 }
