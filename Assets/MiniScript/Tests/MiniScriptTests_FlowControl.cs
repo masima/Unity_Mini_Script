@@ -17,7 +17,7 @@ namespace MiniScript.Tests
 	public partial class MiniScriptTests
 	{
 		/// <summary>
-		/// 辞書型変数参照
+		/// 制御構文テスト
 		/// </summary>
 		/// <param name="index"></param>
 		[Test]
