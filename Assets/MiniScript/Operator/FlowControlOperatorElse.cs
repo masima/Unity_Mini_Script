@@ -19,11 +19,28 @@ namespace MiniScript
 			, ref int startat
 			)
 		{
-			if (!decoder.TryGetStatement(sentence, ref startat, "{}", out Statement))
+			if (!Judge.ValueType.IsValid())
 			{
 				throw new InvalidOperationException();
 			}
-			return new MiniValue<T>(this);
+
+			MiniValue<T> flowControlValue = new(this);
+			if (decoder.TryGetStatement(sentence, ref startat, "{}", out Statement))
+			{
+				return flowControlValue;
+			}
+
+			if (!decoder.TryGetFlowControlOperator(sentence, ref startat, out OperatorInfo operatorInfo))
+			{
+				throw new InvalidOperationException();
+			}
+
+			// elseの後のif
+			startat += operatorInfo.OperatorCode.Length;
+
+			var subOperator = Activator.CreateInstance(operatorInfo.Type) as FlowControlOperator<T>;
+			Statement = subOperator.SplitSentence(decoder, sentence, ref startat);
+			return flowControlValue;
 		}
 
 		public override MiniValue<T> Evalute(IContext<T> context)
