@@ -210,7 +210,7 @@ namespace MiniScript
 						}
 						else
 						{
-							if (TryGetFlowControlOperator(sentence, startat, out OperatorInfo flowControlOperatorInfo))
+							if (TryGetFlowControlOperator(sentence, ref startat, out OperatorInfo flowControlOperatorInfo))
 							{
 								// 制御
 								var flowControlOperator = Activator.CreateInstance(
@@ -344,6 +344,18 @@ namespace MiniScript
 					return false;
 			}
 		}
+		static bool TrimStart(string sentence, ref int startat)
+		{
+			while (startat < sentence.Length)
+			{
+				if (!IsSpace(sentence[startat]))
+				{
+					return true;
+				}
+				++startat;
+			}
+			return false;
+		}
 		static bool TrimComment(string sentence, ref int startat)
 		{
 			if (sentence.Length < startat + CommentCode.Length)
@@ -399,8 +411,13 @@ namespace MiniScript
 		}
 
 
-		public bool TryGetFlowControlOperator(string sentence, int startat, out OperatorInfo value)
+		public bool TryGetFlowControlOperator(string sentence, ref int startat, out OperatorInfo value)
 		{
+			if (!TrimStart(sentence, ref startat))
+			{
+				value = default;
+				return false;
+			}
 			foreach (OperatorInfo op in s_flowControlOperators)
 			{
 				if (0 == string.CompareOrdinal(

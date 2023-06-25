@@ -39,7 +39,7 @@ namespace MiniScript
 			}
 
 			MiniValue<T> flowControlValue = new(this);
-			if (!decoder.TryGetFlowControlOperator(sentence, startat, out OperatorInfo operatorInfo))
+			if (!decoder.TryGetFlowControlOperator(sentence, ref startat, out OperatorInfo operatorInfo))
 			{
 				return flowControlValue;
 			}
