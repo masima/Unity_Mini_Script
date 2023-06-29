@@ -27,6 +27,7 @@
 		LogicalDisjunction = PriorityUnit * 7,
 
 
+		Delegate = PriorityUnit * 9,
 		Assignment = PriorityUnit * 10,
 
 		ArraySeparator = PriorityUnit * 11,

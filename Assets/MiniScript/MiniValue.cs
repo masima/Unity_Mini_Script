@@ -222,6 +222,7 @@ namespace MiniScript
 			case EValueType.Unknown:
 			case EValueType.Integer:
 			case EValueType.Float:
+			case EValueType.Function:
 				return this;
 			case EValueType.Variable:
 			{

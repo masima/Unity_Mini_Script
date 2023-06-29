@@ -12,6 +12,7 @@ namespace MiniScript
 		public override string OperatorCode => ",";
 
 		private List<MiniValue<T>> _values;
+		public List<MiniValue<T>> Values => _values;
 		private MiniList<T> _results;
 
 
