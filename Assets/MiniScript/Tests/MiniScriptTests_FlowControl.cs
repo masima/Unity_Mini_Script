@@ -109,5 +109,51 @@ namespace MiniScript.Tests
 			};
 			TestPatterns(patterns, context);
 		}
+
+		[Test]
+		public void TestFlowControl_while(
+			[Values(0, 1, 2)] float a
+			)
+		{
+			var context = new Context();
+			context.Set(nameof(a), a);
+			var patterns = new (string sentence, float result)[]
+			{
+				// whileテスト
+				("i=0;sum=0;while(i<a){sum=sum+i;i=i+1};sum", Enumerable.Range(0,(int)a).Sum()),
+
+				// breakテスト
+				(@"
+					i=0;
+					sum=0;
+					while(1)
+					{
+						if (i>=a)
+						{
+							break;
+						}
+						sum=sum+i;
+						i=i+1
+					}
+					sum", Enumerable.Range(0,(int)a).Sum()),
+
+				// continueテスト
+				(@"
+					i=0;
+					sum=0;
+					while(1)
+					{
+						if (i<a)
+						{
+							sum=sum+i;
+							i=i+1;
+							continue;
+						}
+						break;
+					}
+					sum", Enumerable.Range(0,(int)a).Sum()),
+			};
+			TestPatterns(patterns, context);
+		}
 	}
 }
