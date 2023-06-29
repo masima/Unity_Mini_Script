@@ -46,6 +46,10 @@ namespace MiniScript
 		public override MiniValue<T> Evalute(IContext<T> context)
 		{
 			MiniValue<T> result = Judge.Evalute(context);
+			if (result.ValueType.IsLoopControl())
+			{
+				return result;
+			}
 
 			if (!result.ToBool())
 			{

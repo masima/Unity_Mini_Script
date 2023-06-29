@@ -168,11 +168,24 @@ namespace MiniScript
 			_value = Calculator.Convert(value);
 			_object = null;
 		}
-		public MiniValue(IOperator binaryOperator)
+		public MiniValue(BinaryOperator<T> binaryOperator)
 		{
 			_valueType = (byte)EValueType.BinaryOperator;
 			_value = default;
 			_object = binaryOperator;
+		}
+		public MiniValue(IOperator operatorObject)
+		{
+			if (operatorObject is ILoopControl)
+			{
+				_valueType = (byte)EValueType.LoopControl;
+			}
+			else
+			{
+				_valueType = (byte)EValueType.Operator;
+			}
+			_value = default;
+			_object = operatorObject;
 		}
 		public MiniValue(MiniList<T> values)
 		{

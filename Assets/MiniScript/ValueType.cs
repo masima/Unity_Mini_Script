@@ -22,6 +22,7 @@ namespace MiniScript
 		Array,
 		Dictionary,
 		Function,
+		LoopControl,
 
 
 
@@ -48,6 +49,10 @@ namespace MiniScript
 		public static bool IsArray(this EValueType valueType)
 		{
 			return valueType == EValueType.Array;
+		}
+		public static bool IsLoopControl(this EValueType valueType)
+		{
+			return valueType == EValueType.LoopControl;
 		}
 	}
 }
