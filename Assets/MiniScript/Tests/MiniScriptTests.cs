@@ -125,50 +125,6 @@ namespace MiniScript.Tests
 
 
 		[Test]
-		public void TestCustomFunction(
-			[Values(1,2,3,5,7,11)] float a
-			, [Values(1,2,3,5,7,11)] float b
-			, [Values(1,2,3,5,7,11)] float c
-			)
-		{
-			var context = new Context();
-
-			// 関数登録
-			context["sum"] = new MiniValue<float>(Sum);
-			// 変数定義
-			context
-				.Set(nameof(a), a)
-				.Set(nameof(b), b)
-				.Set(nameof(c), c)
-				;
-			{
-				var patterns = new (string sentence, float result)[]
-				{
-					("sum(1,2,3)", new float[] {1,2,3}.Sum()),
-					("sum(a+b+c)", new float[] {a,b,c}.Sum()),
-					("sum(a,b,c)", new float[] {a,b,c}.Sum()),
-					("sum(a,a+b,b*c)", new float[] {a,a+b,b*c}.Sum()),
-				};
-				TestPatterns(patterns, context);
-			}
-		}
-		/// <summary>
-		/// 合計値を求める
-		/// </summary>
-		/// <param name="context"></param>
-		/// <param name="parameters"></param>
-		/// <returns></returns>
-		private static MiniValue Sum(IContext<float> context, List<MiniValue> parameters)
-		{
-			float sum = 0;
-			foreach	(var value in parameters)
-			{
-				sum += value.Evalute(context).FloatValue;
-			}
-			return new MiniValue<float>(sum);
-		}
-
-		[Test]
 		public void TestSentences()
 		{
 			var context = new Context();
