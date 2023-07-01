@@ -155,5 +155,65 @@ namespace MiniScript.Tests
 			};
 			TestPatterns(patterns, context);
 		}
+
+		[Test]
+		public void TestFlowControl_while_while(
+			[Values(0, 1, 2)] float a
+			, [Values(0, 1, 2)] float b
+			)
+		{
+			float i = 0;
+			float counter = 0;
+			while (true)
+			{
+				if (a <= i)
+				{
+					break;
+				}
+				float j = 0;						
+				while (true)
+				{
+					if (b <= j)
+					{
+						break;
+					}
+					counter = counter + 1;
+					j = j + 1;
+				}
+				i = i + 1;
+			}
+
+			var context = new Context();
+			context.Set(nameof(a), a);
+			context.Set(nameof(b), b);
+			var patterns = new (string sentence, float result)[]
+			{
+				// 多重ループテスト
+				(@"
+					i = 0;
+					counter = 0;
+					while (1)
+					{
+						if (a <= i)
+						{
+							break;
+						}
+						j = 0;						
+						while (1)
+						{
+							if (b <= j)
+							{
+								break;
+							}
+							counter = counter + 1;
+							j = j + 1;
+						}
+						i = i + 1;
+					}
+					counter"
+					, counter),
+			};
+			TestPatterns(patterns, context);
+		}
 	}
 }
