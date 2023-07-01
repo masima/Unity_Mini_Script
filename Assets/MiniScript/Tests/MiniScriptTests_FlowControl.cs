@@ -215,5 +215,30 @@ namespace MiniScript.Tests
 			};
 			TestPatterns(patterns, context);
 		}
+
+		[Test]
+		public void TestFlowControl_return(
+			[Values(0, 1, 2)] float a
+			)
+		{
+			var context = new Context();
+			context.Set(nameof(a), a);
+			var patterns = new (string sentence, float result)[]
+			{
+				("if(a<1){return -1};a", (a<1) ? -1:a),
+				(@"
+					i = 0;
+					while (1)
+					{
+						if (a <= i)
+						{
+							return i;
+						}
+						i = i + 1;
+					}
+				", a),
+			};
+			TestPatterns(patterns, context);
+		}
 	}
 }
