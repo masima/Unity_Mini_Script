@@ -9,8 +9,10 @@ namespace MiniScript
 		where T : struct, IComparable, IFormattable, IConvertible, IEquatable<T>
 		, IComparable<T>
 	{
+		public const char OperatorCodeConst = ';';
+		private static readonly string _operatorCode = string.Empty + OperatorCodeConst;
 		public override OperatorType OperatorType => OperatorType.SentenceSeparator;
-		public override string OperatorCode => ";";
+		public override string OperatorCode => _operatorCode;
 
 
 		public override List<MiniValue<T>>.Enumerator ConvertToRpn(

@@ -5,8 +5,6 @@ using System.Collections.Generic;
 
 namespace MiniScript
 {
-	public interface ILoopControl {}
-
 	public class FlowControlOperatorBreak<T>
 		: FlowControlOperator<T>, ILoopControl
 		where T : struct, IComparable, IFormattable, IConvertible, IEquatable<T>
@@ -14,6 +12,7 @@ namespace MiniScript
 	{
 		public override OperatorType OperatorType => OperatorType.FlowControl;
 		public override string OperatorCode => "break";
+		public FlowControlFlag FlowControlFlag => FlowControlFlag.Break;
 
 
 		public override MiniValue<T> SplitSentence(

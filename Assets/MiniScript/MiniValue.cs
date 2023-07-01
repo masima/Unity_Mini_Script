@@ -176,15 +176,22 @@ namespace MiniScript
 		}
 		public MiniValue(IOperator operatorObject)
 		{
-			if (operatorObject is ILoopControl)
+			switch (operatorObject)
 			{
-				_valueType = (byte)EValueType.LoopControl;
+				case FlowControlOperatorReturn<T> operatorReturn:
+					_valueType = (byte)EValueType.LoopControl;
+					_value = operatorReturn.ReturnValue.Value;
+					_object = operatorReturn;
+					break;
+				case ILoopControl:
+					_valueType = (byte)EValueType.LoopControl;
+					_value = default;
+					break;
+				default:
+					_valueType = (byte)EValueType.Operator;
+					_value = default;
+					break;					
 			}
-			else
-			{
-				_valueType = (byte)EValueType.Operator;
-			}
-			_value = default;
 			_object = operatorObject;
 		}
 		public MiniValue(MiniList<T> values)
@@ -261,9 +268,10 @@ namespace MiniScript
 			}
 		}
 
-		public void ConvertToVariable()
+		public MiniValue<T> ConvertToVariable()
 		{
 			_valueType = (byte)EValueType.Variable;
+			return this;
 		}
 	}
 

@@ -107,7 +107,7 @@ namespace MiniScript
 
 		const char InvalidEndCode = (char)0;
 
-		private List<MiniValue<T>> SplitSentence(
+		internal List<MiniValue<T>> SplitSentence(
 			string sentence
 			, ref int startat
 			, char endCode = InvalidEndCode)
@@ -205,7 +205,14 @@ namespace MiniScript
 							}
 							else
 							{
-								throw new Exception($"inavlid format:{GetErrorPositionMessage(sentence, startat)}");
+								if (c == '}')
+								{
+									return list;
+								}
+								else
+								{
+									throw new Exception($"inavlid format:{GetErrorPositionMessage(sentence, startat)}");
+								}
 							}
 						}
 						else
@@ -244,7 +251,7 @@ namespace MiniScript
 							else if (TryGetWord(sentence, startat, out string word))
 							{
 								// 変数
-								list.Add(new MiniValue<T>(word));
+								list.Add(new MiniValue<T>(word).ConvertToVariable());
 								startat += word.Length;
 								isLastIsValue = true;
 							}
@@ -257,7 +264,9 @@ namespace MiniScript
 				}
 			}
 
-			if (endCode != InvalidEndCode)
+			if (endCode != InvalidEndCode
+				&& endCode != BinaryOperatorSentenceSeparater<T>.OperatorCodeConst
+				)
 			{
 				throw new Exception($"not found '{endCode.ToString()}' {GetErrorPositionMessage(sentence, startat)}");
 			}
@@ -537,10 +546,6 @@ namespace MiniScript
 				}
 				else
 				{
-					if (value.ValueType.IsString())
-					{
-						value.ConvertToVariable();
-					}
 					pushValue = value;
 				}
 				_rpnStack.Push(pushValue);
