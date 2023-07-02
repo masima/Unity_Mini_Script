@@ -216,6 +216,10 @@ namespace MiniScript.Tests
 			TestPatterns(patterns, context);
 		}
 
+		/// <summary>
+		/// returnテスト
+		/// </summary>
+		/// <param name="a"></param>
 		[Test]
 		public void TestFlowControl_return(
 			[Values(0, 1, 2)] float a
@@ -225,18 +229,39 @@ namespace MiniScript.Tests
 			context.Set(nameof(a), a);
 			var patterns = new (string sentence, float result)[]
 			{
-				("if(a<1){return -1};a", (a<1) ? -1:a),
+				 ("return a", a),
+				 ("return a;", a),
+				 ("{return a}", a),
+				 ("if(a<1){return -1};a", (a<1) ? -1:a),
+				 // whie内のreturn
+				 (@"
+				 	i = 0;
+				 	while (1)
+				 	{
+				 		if (a <= i)
+				 		{
+				 			return i;
+				 		}
+				 		i = i + 1;
+				 	}
+				 ", a),
+				 // 関数内のreturn
+				 (@"
+				 	min = (x,y) =>
+				 	{
+				 		if (x <= y)
+				 		{
+				 			return x;
+				 		}
+				 		return y;
+				 	};
+				 	min(a,1)
+				 ", (a <= 1) ? a : 1),
+				 // 終端のreturn
 				(@"
-					i = 0;
-					while (1)
-					{
-						if (a <= i)
-						{
-							return i;
-						}
-						i = i + 1;
-					}
-				", a),
+					mul2=(x)=>{return x*2};
+					return mul2(a);
+				", a*2),
 			};
 			TestPatterns(patterns, context);
 		}
