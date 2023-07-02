@@ -16,9 +16,9 @@ namespace MiniScript
 		public override MiniValue<T> Evalute(IContext<T> context)
 		{
 			ILoopControl loopControl = null;
-			while (Judge.Evalute(context).ToBool())
+			while (Judge.EvaluteInner(context).ToBool())
 			{
-				MiniValue<T> result = Statement.Evalute(context);
+				MiniValue<T> result = Statement.EvaluteInner(context);
 				if (result.ValueType.IsLoopControl())
 				{
 					if (result.TryGetOperator(out loopControl)

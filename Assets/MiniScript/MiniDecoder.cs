@@ -88,7 +88,7 @@ namespace MiniScript
 		{
 			return DecodeInner(sentence, ref startat, InvalidEndCode);
 		}
-		private MiniValue<T> DecodeInner(string sentence, ref int startat, char endCode)
+		internal MiniValue<T> DecodeInner(string sentence, ref int startat, char endCode)
 		{
 			List<MiniValue<T>> elements = SplitSentence(sentence, ref startat, endCode);
 			ConvertToRpn(elements);
@@ -275,7 +275,7 @@ namespace MiniScript
 		}
 
 		public delegate MiniValue<T> DecodeChildCb(string sentence, ref int startat, char endCode);
-		MiniValue<T> DecodeChild(string sentence, ref int startat, char endCode)
+		internal MiniValue<T> DecodeChild(string sentence, ref int startat, char endCode)
 		{
 			if (_childDecoder is null)
 			{

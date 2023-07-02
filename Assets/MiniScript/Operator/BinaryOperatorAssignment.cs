@@ -12,7 +12,7 @@ namespace MiniScript
 
 		public override MiniValue<T> Evalute(IContext<T> context)
 		{
-			MiniValue<T> right = Right.Evalute(context);
+			MiniValue<T> right = Right.EvaluteInner(context);
 			Left.AssignmentTo(context, right);
 
 			return right;

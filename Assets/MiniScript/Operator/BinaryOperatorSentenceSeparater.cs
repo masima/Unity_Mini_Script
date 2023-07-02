@@ -83,7 +83,7 @@ namespace MiniScript
 			MiniValue<T> lastValue = default;
 			foreach	(var value in _statements)
 			{
-				lastValue = value.Evalute(context);
+				lastValue = value.EvaluteInner(context);
 				if (lastValue.ValueType.IsLoopControl())
 				{
 					return lastValue;

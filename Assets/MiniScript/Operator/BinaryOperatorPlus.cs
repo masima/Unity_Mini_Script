@@ -12,8 +12,8 @@ namespace MiniScript
 
 		public override MiniValue<T> Evalute(IContext<T> context)
 		{
-			MiniValue<T> left = Left.Evalute(context);
-			MiniValue<T> right = Right.Evalute(context);
+			MiniValue<T> left = Left.EvaluteInner(context);
+			MiniValue<T> right = Right.EvaluteInner(context);
 
 			return new MiniValue<T>(MiniValue<T>.Calculator.Add(left.Value, right.Value));
 		}

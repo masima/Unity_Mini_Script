@@ -15,13 +15,18 @@ namespace MiniScript
 
 		public override MiniValue<T> Evalute(IContext<T> context)
 		{
-			MiniValue<T> left = Left.Evalute(context);
-			MiniValue<T> right = Right.Evalute(context);
+			MiniValue<T> left = Left.EvaluteInner(context);
+			MiniValue<T> right = Right.EvaluteInner(context);
 
 			var func = left.GetObject<MiniValue<T>.Function>();
 			var parameters = right.GetObject<List<MiniValue<T>>>();
 
-			return func.Invoke(context, parameters);
+			MiniValue<T> result = func.Invoke(context, parameters);
+			if (result.TryGetOperator(out FlowControlOperatorReturn<T> operatorReturn))
+			{
+				return operatorReturn.ReturnValue;
+			}
+			return result;
 		}
 	}
 

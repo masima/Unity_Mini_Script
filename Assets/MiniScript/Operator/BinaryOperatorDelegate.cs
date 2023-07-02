@@ -24,9 +24,16 @@ namespace MiniScript
 					.Select(_ => new Parameter { Name = _.StringValue, })
 					.ToArray();
 			}
-			else
+			else if (!paramValue.ValueType.IsValid())
 			{
 				delegateInfo.Parameters = new Parameter[0];
+			}
+			else
+			{
+				delegateInfo.Parameters = new Parameter[]
+				{
+					new Parameter { Name = paramValue.StringValue },
+				};
 			}
 			return new MiniValue<T>(delegateInfo.Func);
 		}
@@ -45,7 +52,7 @@ namespace MiniScript
 			public MiniValue<T> Func(IContext<T> context, List<MiniValue<T>> parameters)
 			{
 				SetupValues(context, parameters);
-				MiniValue<T> result = Statement.Evalute(context);
+				MiniValue<T> result = Statement.EvaluteInner(context);
 				RestoreValues(context);
 				return result;
 			}

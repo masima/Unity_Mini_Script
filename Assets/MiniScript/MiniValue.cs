@@ -224,6 +224,15 @@ namespace MiniScript
 
 		public MiniValue<T> Evalute(IContext<T> context)
 		{
+			MiniValue<T> result = EvaluteInner(context);
+			if (result.TryGetOperator(out FlowControlOperatorReturn<T> returnOperator))
+			{
+				return returnOperator.ReturnValue;
+			}
+			return result;
+		}
+		internal MiniValue<T> EvaluteInner(IContext<T> context)
+		{
 			switch ((EValueType)_valueType)
 			{
 			case EValueType.Unknown:

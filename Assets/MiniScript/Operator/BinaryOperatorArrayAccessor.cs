@@ -19,13 +19,13 @@ namespace MiniScript
 
 		public override MiniValue<T> Evalute(IContext<T> context)
 		{
-			MiniValue<T> left = Left.Evalute(context);
+			MiniValue<T> left = Left.EvaluteInner(context);
 
 			switch(left.GetObject())
 			{
 				case List<MiniValue<T>> array:
 				{
-					MiniValue<T> right = Right.Evalute(context);
+					MiniValue<T> right = Right.EvaluteInner(context);
 					int index = right.IntegerValue;
 					return array[index];
 				}

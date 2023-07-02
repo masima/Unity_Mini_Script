@@ -56,7 +56,7 @@ namespace MiniScript
 		{
 			foreach (MiniValue<T> value in values)
 			{
-				Add(value.Evalute(context));
+				Add(value.EvaluteInner(context));
 			}
 			return new MiniValue<T>(this);
 		}
@@ -67,23 +67,23 @@ namespace MiniScript
 		}
 		private MiniValue<T> Insert(IContext<T> context, List<MiniValue<T>> values)
 		{
-			int index = values[0].Evalute(context).IntegerValue;
+			int index = values[0].EvaluteInner(context).IntegerValue;
 			for (int i = 1; i < values.Count; i++)
 			{
-				Insert(index + i - 1, values[i].Evalute(context));
+				Insert(index + i - 1, values[i].EvaluteInner(context));
 			}
 			return new MiniValue<T>(this);
 		}
 		private MiniValue<T> RemoveAt(IContext<T> context, List<MiniValue<T>> values)
 		{
-			int index = values[0].Evalute(context).IntegerValue;
+			int index = values[0].EvaluteInner(context).IntegerValue;
 			RemoveAt(index);
 			return new MiniValue<T>(this);
 		}
 		private MiniValue<T> Pop(IContext<T> context, List<MiniValue<T>> values)
 		{
 			int lastIndex = Count - 1;
-			MiniValue<T> lastValue = this[lastIndex].Evalute(context);
+			MiniValue<T> lastValue = this[lastIndex].EvaluteInner(context);
 			RemoveAt(lastIndex);
 			return lastValue;
 		}

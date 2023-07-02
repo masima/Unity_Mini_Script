@@ -15,11 +15,11 @@ namespace MiniScript
 
 		public override MiniValue<T> Evalute(IContext<T> context)
 		{
-			MiniValue<T> result = Judge.Evalute(context);
+			MiniValue<T> result = Judge.EvaluteInner(context);
 
 			if (result.ToBool())
 			{
-				MiniValue<T> r = Statement.Evalute(context);
+				MiniValue<T> r = Statement.EvaluteInner(context);
 				if (r.ValueType.IsLoopControl())
 				{
 					return r;

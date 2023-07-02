@@ -24,12 +24,11 @@ namespace MiniScript
 		{
 			MiniValue<T> flowControlValue = new(this);
 			// Judge = MiniValue<T>.Default;
-			var list = decoder.SplitSentence(
+			Statement = decoder.DecodeChild(
 				sentence
 				, ref startat
 				, endCode: BinaryOperatorSentenceSeparater<T>.OperatorCodeConst
-				);
-			Statement = list[0];
+			);
 			return flowControlValue;
 		}
 
@@ -37,14 +36,14 @@ namespace MiniScript
 		{
 			if (Judge.ValueType.IsValid())
 			{
-				MiniValue<T> result = Judge.Evalute(context);
+				MiniValue<T> result = Judge.EvaluteInner(context);
 				if (result.ValueType.IsLoopControl())
 				{
 					return result;
 				}
 			}
 
-			ReturnValue = Statement.Evalute(context);
+			ReturnValue = Statement.EvaluteInner(context);
 			return new MiniValue<T>(this);
 		}
 	}

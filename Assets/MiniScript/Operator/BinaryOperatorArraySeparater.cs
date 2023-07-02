@@ -74,7 +74,7 @@ namespace MiniScript
 			_results.Clear();
 			foreach	(MiniValue<T> value in _values)
 			{
-				_results.Add(value.Evalute(context));
+				_results.Add(value.EvaluteInner(context));
 			}
 			return new MiniValue<T>(_results);
 		}

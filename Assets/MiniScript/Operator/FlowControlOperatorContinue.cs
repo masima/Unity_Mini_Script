@@ -30,7 +30,7 @@ namespace MiniScript
 		{
 			if (Judge.ValueType.IsValid())
 			{
-				MiniValue<T> result = Judge.Evalute(context);
+				MiniValue<T> result = Judge.EvaluteInner(context);
 				if (result.ValueType.IsLoopControl())
 				{
 					return result;
