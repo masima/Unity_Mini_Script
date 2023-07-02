@@ -274,7 +274,6 @@ namespace MiniScript
 			return list;
 		}
 
-		public delegate MiniValue<T> DecodeChildCb(string sentence, ref int startat, char endCode);
 		internal MiniValue<T> DecodeChild(string sentence, ref int startat, char endCode)
 		{
 			if (_childDecoder is null)
