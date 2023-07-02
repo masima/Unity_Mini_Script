@@ -273,7 +273,7 @@ namespace MiniScript
 					context[AssignmentKey] = value;
 					break;
 				default:
-					if (TryGetOperator(out BinaryOperatorDictionaryAccessor<T> accessor))
+					if (TryGetOperator(out IAssignmentTo<T> accessor))
 					{
 						accessor.AssignmentTo(context, value);
 						return;

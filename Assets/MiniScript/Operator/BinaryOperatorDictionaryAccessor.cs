@@ -6,6 +6,7 @@ namespace MiniScript
 	public class BinaryOperatorDictionaryAccessor<T>
 		: BinaryOperator<T>
 		, IOperatorOnFinalized
+		, IAssignmentTo<T>
 		where T : struct, IComparable, IFormattable, IConvertible, IEquatable<T>
 		, IComparable<T>
 	{
