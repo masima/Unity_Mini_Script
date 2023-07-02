@@ -79,6 +79,8 @@ namespace MiniScript.Tests
 				// delegateの定義と実行
 				("addValue=(x,y)=>{x+y};addValue(a,b)", a+b),
 				// delegate引数のローカル状態テスト
+				("addValue=(a)=>{a=a*2};addValue(a)", a*2),
+				("addValue=(a)=>{a=a*2};addValue(a);a", a),
 				("x=1;y=2;addValue=(x,y)=>{x+y};addValue(a,b);x+y", 1+2),
 			};
 			TestPatterns(patterns, context);
