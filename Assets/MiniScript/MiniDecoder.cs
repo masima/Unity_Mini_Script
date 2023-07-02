@@ -24,6 +24,7 @@ namespace MiniScript
 		// private static readonly List<OperatorInfo> s_unrayOperators = new();
 		private static readonly List<OperatorInfo> s_flowControlOperators = new();
 		private static readonly List<OperatorInfo> s_binaryOperators = new();
+
 		public static void Setup(Assembly assembly = null)
 		{
 			s_flowControlOperators.Clear();
@@ -34,6 +35,21 @@ namespace MiniScript
 			if (assembly is not null && miniDecoderAssembly != assembly)
 			{
 				RegisterOperators(assembly);
+			}
+
+			// Calculatorがセットされていなければ検索
+			if (MiniValue<T>.Calculator is null)
+			{
+				if (assembly is not null
+					&& MiniValue<T>.Setup(assembly)
+					)
+				{
+					return;
+				}
+				if (!MiniValue<T>.Setup(miniDecoderAssembly))
+				{
+					throw new Exception($"not found ICalculator<{typeof(T).Name}>");
+				}
 			}
 
 		}
@@ -283,7 +299,7 @@ namespace MiniScript
 			var childValue = _childDecoder.DecodeInner(sentence, ref startat , endCode);
 			return childValue;
 		}
-		public bool TryGetStatement(
+		internal bool TryGetStatement(
 			string sentence
 			, ref int startat
 			, string beginEnd

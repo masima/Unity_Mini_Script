@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace MiniScript
 {
@@ -96,16 +98,43 @@ namespace MiniScript
 		public delegate MiniValue<T> Function(IContext<T> context, List<MiniValue<T>> values);
 
 
-		static MiniValue()
+		/// <summary>
+		/// 使用するCalculatorをセットする
+		/// </summary>
+		/// <param name="calculator"></param>
+		public static void Setup(ICalculator<T> calculator)
 		{
-			if (typeof(T) == typeof(float))
+			s_calculator = calculator;
+		}
+		/// <summary>
+		/// Assembly内の適応するCalculatorをセットする
+		/// </summary>
+		/// <param name="assembly"></param>
+		/// <returns></returns>
+		public static bool Setup(Assembly assembly)
+		{
+			foreach (Type type in assembly.GetTypes())
 			{
-				s_calculator = new CalculatorFloat();
+				foreach (Type interfaseType in type.GetInterfaces())
+				{
+					if (!interfaseType.IsGenericType)
+					{
+						continue;
+					}
+					if (interfaseType.GetGenericTypeDefinition() == typeof(ICalculator<>))
+					{
+						Type genericArgumentType = interfaseType.GetGenericArguments()[0];
+						if (genericArgumentType == typeof(T))
+						{
+							s_calculator = Activator.CreateInstance(type) as ICalculator<T>;
+							return true;
+						}
+
+					}
+				}
 			}
-			else if (typeof(T) == typeof(int))
-			{
-				s_calculator = new CalculatorInteger();
-			}
+
+			return false;
 		}
 
 		public static EValueType GetValueType(Type type)
@@ -260,7 +289,7 @@ namespace MiniScript
 			}
 		}
 
-		public void AssignmentTo(IContext<T> context, MiniValue<T> value)
+		internal void AssignmentTo(IContext<T> context, MiniValue<T> value)
 		{
 			switch (ValueType)
 			{
@@ -277,7 +306,7 @@ namespace MiniScript
 			}
 		}
 
-		public MiniValue<T> ConvertToVariable()
+		internal MiniValue<T> ConvertToVariable()
 		{
 			_valueType = (byte)EValueType.Variable;
 			return this;
