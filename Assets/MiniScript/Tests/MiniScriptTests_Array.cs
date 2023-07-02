@@ -31,8 +31,11 @@ namespace MiniScript.Tests
 			{
 				var patterns = new (string sentence, float result)[]
 				{
+					// 初期化と参照
 					("a=(1,2,3);a[index]", (new float[] {1, 2, 3})[(int)index]),
 					("a=(index,index*2,index*3);a[index]", (new float[] {index, index * 2, index * 3})[(int)index]),
+					// 値の設定
+					("a=(1,2,3);a[index]=4;a[index]", 4),
 				};
 				TestPatterns(patterns, context);
 			}
