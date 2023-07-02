@@ -137,19 +137,6 @@ namespace MiniScript
 			return false;
 		}
 
-		public static EValueType GetValueType(Type type)
-		{
-			if (type == typeof(int))
-			{
-				return EValueType.Integer;
-			}
-			else if (type == typeof(float))
-			{
-				return EValueType.Float;
-			}
-			return EValueType.Unknown;
-		}
-
 		public static MiniValue<T> GetConstValue(string value)
 		{
 			return new MiniValue<T>(Calculator.Convert(value));
@@ -165,35 +152,25 @@ namespace MiniScript
 
 		public MiniValue(T value)
 		{
-			switch (value)
-			{
-			case int:
-				_valueType = (byte)EValueType.Integer;
-				break;
-			case float:
-				_valueType = (byte)EValueType.Float;
-				break;
-			default:
-				throw new InvalidOperationException();
-			}
+			_valueType = (byte)EValueType.Const;
 			_value = value;
 			_object = null;
 		}
 		public MiniValue(bool value)
 		{
-			_valueType = (byte)GetValueType(typeof(T));
+			_valueType = (byte)EValueType.Const;
 			_value = Calculator.Convert(value);
 			_object = null;
 		}
 		public MiniValue(int value)
 		{
-			_valueType = (byte)GetValueType(typeof(T));
+			_valueType = (byte)EValueType.Const;
 			_value = Calculator.Convert(value);
 			_object = null;
 		}
 		public MiniValue(float value)
 		{
-			_valueType = (byte)GetValueType(typeof(T));
+			_valueType = (byte)EValueType.Const;
 			_value = Calculator.Convert(value);
 			_object = null;
 		}
@@ -265,8 +242,7 @@ namespace MiniScript
 			switch ((EValueType)_valueType)
 			{
 			case EValueType.Unknown:
-			case EValueType.Integer:
-			case EValueType.Float:
+			case EValueType.Const:
 			case EValueType.Function:
 				return this;
 			case EValueType.Variable:

@@ -10,8 +10,7 @@ namespace MiniScript
 	public enum EValueType
 	{
 		Unknown = 0,
-		Float,
-		Integer,
+		Const,
 		
 		String,
 
