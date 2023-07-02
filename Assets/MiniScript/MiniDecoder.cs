@@ -97,7 +97,7 @@ namespace MiniScript
 
 		
 		static readonly Regex s_regexConstValue = new Regex(@"-?\d+(\.\d*)?");
-		static readonly Regex s_regexWord = new Regex(@"\w+");
+		static readonly Regex s_regexWord = new Regex(@"[a-zA-Z0-9_]+");
 		const string CommentCode = "//";
 		
 

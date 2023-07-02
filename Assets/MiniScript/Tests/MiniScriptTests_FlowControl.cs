@@ -233,6 +233,7 @@ namespace MiniScript.Tests
 				 ("return a;", a),
 				 ("{return a}", a),
 				 ("if(a<1){return -1};a", (a<1) ? -1:a),
+				 ("if(a<1){return-1};a", (a<1) ? -1:a),
 				 // whie内のreturn
 				 (@"
 				 	i = 0;
