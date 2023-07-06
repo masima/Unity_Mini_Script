@@ -24,8 +24,12 @@ namespace MiniScript
 		// private static readonly List<OperatorInfo> s_unrayOperators = new();
 		private static readonly List<OperatorInfo> s_flowControlOperators = new();
 		private static readonly List<OperatorInfo> s_binaryOperators = new();
+		private static Type s_contextType;
 
-		public static void Setup(Assembly assembly = null)
+		public static void Setup(
+			Assembly assembly = null
+			, Type contextType = null
+			)
 		{
 			s_flowControlOperators.Clear();
 			s_binaryOperators.Clear();
@@ -52,14 +56,22 @@ namespace MiniScript
 				}
 			}
 
+			if (contextType == null)
+			{
+				s_contextType = typeof(Context<T>);
+			}
+			else
+			{
+				s_contextType = contextType;
+			}
 		}
 		private static void RegisterOperators(Assembly assembly)
 		{
 			Type[] binaryOperatorTypes = assembly.GetTypes()
 				.Where(_ =>
 					_.BaseType != null
-					&& !_.IsAbstract 
-					&& _.BaseType.IsGenericType 
+					&& !_.IsAbstract
+					&& _.BaseType.IsGenericType
 					// && _.BaseType.GetGenericTypeDefinition() == typeof(IOperator<>)
 					)
 				.ToArray();
@@ -88,11 +100,14 @@ namespace MiniScript
 				}
 				var defaultValue = Activator.CreateInstance(genericType);
 				string code = (string)propertyInfo.GetValue(defaultValue);
-				infos.Add(new OperatorInfo
+				if (!string.IsNullOrEmpty(code))
 				{
-					Type = genericType,
-					OperatorCode = code,
-				});
+					infos.Add(new OperatorInfo
+					{
+						Type = genericType,
+						OperatorCode = code,
+					});
+				}
 			}
 			// 文字数の多い順に並べる
 			s_flowControlOperators.Sort((left, right) => right.OperatorCode.Length - left.OperatorCode.Length);
@@ -111,11 +126,11 @@ namespace MiniScript
 			return FinalizeRpn();
 		}
 
-		
+
 		static readonly Regex s_regexConstValue = new Regex(@"-?\d+(\.\d*)?");
 		static readonly Regex s_regexWord = new Regex(@"[a-zA-Z0-9_]+");
 		const string CommentCode = "//";
-		
+
 
 		readonly List<MiniValue<T>> _elements = new();
 		readonly List<MiniValue<T>> _rpn = new();
@@ -141,7 +156,7 @@ namespace MiniScript
 					continue;
 				}
 
-				if (c == endCode){
+				if (c == endCode) {
 					++startat;
 					return list;
 				}
@@ -164,6 +179,7 @@ namespace MiniScript
 								));
 							if (childValue.TryGetOperator<BinaryOperatorArraySeparater<T>>(out var _))
 							{
+								// 配列引数
 								list.Add(childValue);
 							}
 							else
@@ -177,6 +193,7 @@ namespace MiniScript
 						{
 							if (childValue.ValueType.IsValid())
 							{
+								// 通常の括弧
 								list.Add(childValue);
 							}
 							else
@@ -197,86 +214,100 @@ namespace MiniScript
 						isLastIsValue = true;
 						break;
 					}
-					default:
+				case '[':
+					{
+						++startat;
+						TrimStart(sentence, ref startat);
+						// 配列参照
 						if (isLastIsValue)
 						{
-							// 値の後
-							if (c == '[')
-							{
-								// 配列参照
-								++startat;
-								var childValue = DecodeChild(sentence, ref startat, ']');
-								list.Add(new MiniValue<T>(
-									new BinaryOperatorArrayAccessor<T>()
-									));
-								list.Add(childValue);
-							}
-							else if (TryGetBinaryOperator(sentence, startat, out OperatorInfo operatorInfo))
-							{
-								list.Add(new MiniValue<T>(
-									Activator.CreateInstance(operatorInfo.Type)
-									as BinaryOperator<T>));
-								startat += operatorInfo.OperatorCode.Length;
-								isLastIsValue = false;
-							}
-							else
-							{
-								if (c == '}')
-								{
-									return list;
-								}
-								else
-								{
-									throw new Exception($"inavlid format:{GetErrorPositionMessage(sentence, startat)}");
-								}
-							}
+							// 値の後は配列参照
+							var childValue = DecodeChild(sentence, ref startat, ']');
+							list.Add(new MiniValue<T>(
+								new BinaryOperatorArrayAccessor<T>()
+								));
+							list.Add(childValue);
 						}
 						else
 						{
-							if (TryGetFlowControlOperator(sentence, ref startat, out OperatorInfo flowControlOperatorInfo))
+							var childValue = DecodeChild(sentence, ref startat, ']');
+							list.Add(new MiniValue<T>(
+								new DefinitionOperatorDictionary<T>(
+									Activator.CreateInstance(s_contextType) as IContext<T>
+									,childValue)
+								));
+						}
+						break;
+					}
+				default:
+					if (isLastIsValue)
+					{
+						if (TryGetBinaryOperator(sentence, startat, out OperatorInfo operatorInfo))
+						{
+							list.Add(new MiniValue<T>(
+								Activator.CreateInstance(operatorInfo.Type)
+								as BinaryOperator<T>));
+							startat += operatorInfo.OperatorCode.Length;
+							isLastIsValue = false;
+						}
+						else
+						{
+							if (c == '}')
 							{
-								// 制御
-								var flowControlOperator = Activator.CreateInstance(
-									flowControlOperatorInfo.Type)
-									as FlowControlOperator<T>;
-								startat += flowControlOperatorInfo.OperatorCode.Length;
-								list.Add(flowControlOperator.SplitSentence(
-									this
-									, sentence
-									, ref startat
-									));
-								// 文を分割しておく
-								list.Add(new MiniValue<T>(new BinaryOperatorSentenceSeparater<T>()));
-							}
-							else 
-							if (TryGetConstValue(sentence, startat, out string value))
-							{
-								// 値
-								list.Add(MiniValue<T>.GetConstValue(value));
-								startat += value.Length;
-								isLastIsValue = true;
-							}
-							else if (TryGetBinaryOperator(sentence, startat, out OperatorInfo operatorInfo))
-							{
-								// ２項演算子
-								list.Add(new MiniValue<T>(
-									Activator.CreateInstance(operatorInfo.Type)
-									as BinaryOperator<T>));
-								startat += operatorInfo.OperatorCode.Length;
-							}
-							else if (TryGetWord(sentence, startat, out string word))
-							{
-								// 変数
-								list.Add(new MiniValue<T>(word).ConvertToVariable());
-								startat += word.Length;
-								isLastIsValue = true;
+								return list;
 							}
 							else
 							{
 								throw new Exception($"inavlid format:{GetErrorPositionMessage(sentence, startat)}");
 							}
 						}
-						break;
+					}
+					else
+					{
+						if (TryGetFlowControlOperator(sentence, ref startat, out OperatorInfo flowControlOperatorInfo))
+						{
+							// 制御
+							var flowControlOperator = Activator.CreateInstance(
+								flowControlOperatorInfo.Type)
+								as FlowControlOperator<T>;
+							startat += flowControlOperatorInfo.OperatorCode.Length;
+							list.Add(flowControlOperator.SplitSentence(
+								this
+								, sentence
+								, ref startat
+								));
+							// 文を分割しておく
+							list.Add(new MiniValue<T>(new BinaryOperatorSentenceSeparater<T>()));
+						}
+						else
+						if (TryGetConstValue(sentence, startat, out string value))
+						{
+							// 値
+							list.Add(MiniValue<T>.GetConstValue(value));
+							startat += value.Length;
+							isLastIsValue = true;
+						}
+						else if (TryGetBinaryOperator(sentence, startat, out OperatorInfo operatorInfo))
+						{
+							// ２項演算子
+							list.Add(new MiniValue<T>(
+								Activator.CreateInstance(operatorInfo.Type)
+								as BinaryOperator<T>));
+							startat += operatorInfo.OperatorCode.Length;
+						}
+						else if (TryGetWord(sentence, startat, out string word))
+						{
+							// 変数
+							list.Add(new MiniValue<T>(word).ConvertToVariable());
+							startat += word.Length;
+							isLastIsValue = true;
+						}
+						else
+						{
+							throw new Exception($"inavlid format:{GetErrorPositionMessage(sentence, startat)}");
+						}
+					}
+					break;
 				}
 			}
 
@@ -296,7 +327,7 @@ namespace MiniScript
 			{
 				_childDecoder = new MiniDecoder<T>();
 			}
-			var childValue = _childDecoder.DecodeInner(sentence, ref startat , endCode);
+			var childValue = _childDecoder.DecodeInner(sentence, ref startat, endCode);
 			return childValue;
 		}
 		internal bool TryGetStatement(
@@ -369,6 +400,26 @@ namespace MiniScript
 				default:
 					return false;
 			}
+		}
+		static bool TryGetChar(string sentence, ref int startat, out char c)
+		{
+			if (sentence.Length <= startat)
+			{
+				c = default;
+				return false;
+			}
+			c = sentence[startat++];
+			return true;
+		}
+		static bool TryPeekChar(string sentence, ref int startat, out char c)
+		{
+			if (sentence.Length <= startat)
+			{
+				c = default;
+				return false;
+			}
+			c = sentence[startat];
+			return true;
 		}
 		static bool TrimStart(string sentence, ref int startat)
 		{

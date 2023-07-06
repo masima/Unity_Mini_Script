@@ -17,7 +17,12 @@ namespace MiniScript
 		public IContext<T> Instantiate();
 		public int Count { get; }
 		public bool TryGetValue(string key, out MiniValue<T> value);
+		public void Clear();
 	}
+	/// <summary>
+	/// デフォルトContext
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
 	public class Context<T>
 		: Dictionary<string, MiniValue<T>>
 		, IContext<T>

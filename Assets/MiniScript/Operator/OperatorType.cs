@@ -29,6 +29,7 @@
 
 		Delegate = PriorityUnit * 9,
 		Assignment = PriorityUnit * 10,
+		KeyValuePair,
 
 		ArraySeparator = PriorityUnit * 11,
 		SentenceSeparator = PriorityUnit * 12,
